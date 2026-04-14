@@ -1900,11 +1900,39 @@ function loadGrammarSentence() {
   renderGrammarKeyboard(firstChar === ' ' ? null : firstChar);
   updateGrammarFingerHint(firstChar);
 
-  // Speak sentence
-  setTimeout(() => speakWord(s.before + s.answer + s.after), 300);
+  // Speak sentence with pause at blank
+  setTimeout(() => speakWithBlank(s.before, s.after), 300);
 
   document.removeEventListener('keydown', handleGrammarKeyPress);
   document.addEventListener('keydown', handleGrammarKeyPress);
+}
+
+function speakWithBlank(before, after) {
+  if (!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  if (before.trim()) {
+    const u1 = new SpeechSynthesisUtterance(before.trim());
+    u1.lang = 'en-US';
+    u1.rate = 0.85;
+    u1.onend = () => {
+      setTimeout(() => {
+        if (after.trim()) {
+          const u2 = new SpeechSynthesisUtterance(after.trim());
+          u2.lang = 'en-US';
+          u2.rate = 0.85;
+          speechSynthesis.speak(u2);
+        }
+      }, 2000);
+    };
+    speechSynthesis.speak(u1);
+  } else if (after.trim()) {
+    setTimeout(() => {
+      const u2 = new SpeechSynthesisUtterance(after.trim());
+      u2.lang = 'en-US';
+      u2.rate = 0.85;
+      speechSynthesis.speak(u2);
+    }, 2000);
+  }
 }
 
 function escapeHtml(text) {

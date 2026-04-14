@@ -1546,12 +1546,47 @@ let vocabLetterIdx = 0;
 let vocabWordStats = []; // { en, vi, mistakes }
 
 // --- Speech ---
+let bestVoice = null;
+function findBestVoice() {
+  const voices = speechSynthesis.getVoices();
+  // Priority: Google UK > Google US > Microsoft natural voices > any en voice
+  const priority = [
+    v => v.name.includes('Google UK English Female'),
+    v => v.name.includes('Google UK English Male'),
+    v => v.name.includes('Google US English'),
+    v => v.lang.startsWith('en') && v.name.toLowerCase().includes('natural'),
+    v => v.lang.startsWith('en') && v.name.includes('Microsoft') && v.name.includes('Online'),
+    v => v.lang.startsWith('en') && v.name.includes('Microsoft'),
+    v => v.lang === 'en-GB',
+    v => v.lang === 'en-US',
+    v => v.lang.startsWith('en'),
+  ];
+  for (const test of priority) {
+    const found = voices.find(test);
+    if (found) { bestVoice = found; return; }
+  }
+}
+if (window.speechSynthesis) {
+  speechSynthesis.onvoiceschanged = findBestVoice;
+  findBestVoice();
+}
+
+function applyVoice(utterance) {
+  if (bestVoice) {
+    utterance.voice = bestVoice;
+    utterance.lang = bestVoice.lang;
+  } else {
+    utterance.lang = 'en-US';
+  }
+  utterance.rate = 0.82;
+  utterance.pitch = 1.0;
+}
+
 function speakWord(word) {
   if (!window.speechSynthesis) return;
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(word);
-  u.lang = 'en-US';
-  u.rate = 0.85;
+  applyVoice(u);
   speechSynthesis.speak(u);
 }
 function speakCurrentWord() {
@@ -1912,14 +1947,12 @@ function speakWithBlank(before, after) {
   speechSynthesis.cancel();
   if (before.trim()) {
     const u1 = new SpeechSynthesisUtterance(before.trim());
-    u1.lang = 'en-US';
-    u1.rate = 0.85;
+    applyVoice(u1);
     u1.onend = () => {
       setTimeout(() => {
         if (after.trim()) {
           const u2 = new SpeechSynthesisUtterance(after.trim());
-          u2.lang = 'en-US';
-          u2.rate = 0.85;
+          applyVoice(u2);
           speechSynthesis.speak(u2);
         }
       }, 2000);
@@ -1928,8 +1961,7 @@ function speakWithBlank(before, after) {
   } else if (after.trim()) {
     setTimeout(() => {
       const u2 = new SpeechSynthesisUtterance(after.trim());
-      u2.lang = 'en-US';
-      u2.rate = 0.85;
+      applyVoice(u2)
       speechSynthesis.speak(u2);
     }, 2000);
   }

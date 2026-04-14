@@ -510,6 +510,7 @@
   }
   .vocab-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(37,99,235,0.4); }
   #vocab-select-screen, #vocab-practice-screen, #vocab-result-screen { display: none; }
+  #grammar-select-screen, #grammar-practice-screen, #grammar-result-screen { display: none; }
   .unit-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -652,6 +653,101 @@
   .vocab-stats-table .word-vi-cell { color: #555; }
   .vocab-word-perfect { color: #16a34a; font-weight: 700; }
   .vocab-word-missed { color: #dc2626; font-weight: 700; }
+
+  /* === GRAMMAR === */
+  .grammar-btn {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    padding: 10px 24px;
+    font-size: 1.05em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .grammar-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(220,38,38,0.4); }
+  .grammar-card {
+    background: linear-gradient(135deg, #fef2f2, #fecaca);
+    border: 2px solid #fca5a5;
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .grammar-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(220,38,38,0.2);
+    border-color: #ef4444;
+  }
+  .grammar-card .unit-num { background: #dc2626; }
+  .grammar-card .unit-title { font-weight: 700; color: #7f1d1d; font-size: 1.15em; margin-bottom: 4px; }
+  .grammar-card .unit-count { color: #6b7280; font-size: 0.9em; }
+  .grammar-hint {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border: 2px solid #f59e0b;
+    border-radius: 12px;
+    padding: 12px 20px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .grammar-hint .hint-label { font-size: 0.85em; color: #92400e; margin-bottom: 4px; }
+  .grammar-hint .hint-text { font-size: 1.3em; font-weight: 700; color: #78350f; }
+  .grammar-hint .hint-rule { font-size: 0.9em; color: #b45309; margin-top: 4px; font-style: italic; }
+  .sentence-display {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+    line-height: 1.8;
+    color: #1e293b;
+  }
+  .sentence-display .blank-area {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    vertical-align: baseline;
+  }
+  .sentence-display .g-letter-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 40px;
+    border-bottom: 3px solid #dc2626;
+    font-weight: 800;
+    font-family: 'Consolas', monospace;
+    color: #dc2626;
+    margin: 0 1px;
+    transition: all 0.15s;
+  }
+  .sentence-display .g-letter-box.g-current {
+    border-bottom-color: #7c3aed;
+    background: #ede9fe;
+    border-radius: 4px;
+    animation: pulse 0.8s ease-in-out infinite alternate;
+  }
+  .sentence-display .g-letter-box.g-correct {
+    color: #16a34a;
+    border-bottom-color: #16a34a;
+  }
+  .sentence-display .g-letter-box.g-wrong {
+    color: #dc2626;
+    background: #fee2e2;
+    border-radius: 4px;
+    animation: shake 0.3s;
+  }
+  .sentence-display .g-letter-box.g-space {
+    width: 18px;
+    border-bottom-style: dashed;
+    opacity: 0.4;
+  }
 </style>
 </head>
 <body>
@@ -663,6 +759,7 @@
     <div class="star-balance">
       <div class="star-wallet">&#11088; <span id="star-count">0</span> sao</div>
       <button class="vocab-btn" onclick="showVocabSelect()">&#128214; Từ vựng</button>
+      <button class="grammar-btn" onclick="showGrammarSelect()">&#128221; Ngữ pháp</button>
       <button class="shop-btn" onclick="showShop()">&#128722; Cửa hàng</button>
     </div>
     <div class="lesson-grid" id="lesson-grid"></div>
@@ -680,6 +777,57 @@
     <hr style="border:none;border-top:2px solid #e5e7eb;margin:24px 0;">
     <h2 style="color:#4a3f8a;margin-bottom:8px;">&#127890; Tủ đồ của con</h2>
     <div id="inventory-area"></div>
+  </div>
+
+  <!-- GRAMMAR SELECT SCREEN -->
+  <div id="grammar-select-screen">
+    <button class="back-btn" onclick="showSelect()">&larr; Quay lại</button>
+    <h1>&#128221; Ngữ Pháp Tiếng Anh</h1>
+    <p class="subtitle">Chọn unit để luyện ngữ pháp qua gõ phím!</p>
+    <div class="unit-grid" id="grammar-unit-grid"></div>
+  </div>
+
+  <!-- GRAMMAR PRACTICE SCREEN -->
+  <div id="grammar-practice-screen">
+    <button class="back-btn" onclick="showGrammarSelect()">&larr; Quay lại chọn unit</button>
+    <h2 id="grammar-unit-title" style="text-align:center;color:#7f1d1d;margin-bottom:8px;"></h2>
+    <div class="vocab-progress">Câu <span id="grammar-pos">1</span> / <span id="grammar-total">0</span></div>
+    <div class="grammar-hint">
+      <div class="hint-label">Gợi ý</div>
+      <div class="hint-text" id="grammar-hint-text"></div>
+      <div class="hint-rule" id="grammar-hint-rule"></div>
+    </div>
+    <div class="sentence-display" id="sentence-display"></div>
+    <div class="finger-hint" id="grammar-finger-hint"></div>
+    <div class="keyboard" id="grammar-keyboard"></div>
+  </div>
+
+  <!-- GRAMMAR RESULT SCREEN -->
+  <div id="grammar-result-screen">
+    <button class="back-btn" onclick="showGrammarSelect()">&larr; Quay lại chọn unit</button>
+    <div class="result-box">
+      <h2 id="grammar-result-title"></h2>
+      <div class="result-score" id="grammar-result-score"></div>
+      <div class="result-stars" id="grammar-result-stars"></div>
+      <div class="result-message" id="grammar-result-message"></div>
+      <div class="stars-earned-note" id="grammar-stars-earned" style="display:none;"></div>
+    </div>
+    <table class="vocab-stats-table">
+      <thead>
+        <tr>
+          <th>Câu</th>
+          <th>Đáp án</th>
+          <th>Kết quả</th>
+          <th>Số lần sai</th>
+        </tr>
+      </thead>
+      <tbody id="grammar-stats-body"></tbody>
+    </table>
+    <div class="result-buttons">
+      <button class="btn btn-primary" id="grammar-btn-retry">Tập lại unit này</button>
+      <button class="btn btn-success" id="grammar-btn-next">Unit tiếp theo</button>
+      <button class="btn btn-secondary" onclick="showGrammarSelect()">Chọn unit khác</button>
+    </div>
   </div>
 
   <!-- VOCAB SELECT SCREEN -->
@@ -946,7 +1094,7 @@ function updateStarDisplays() {
 }
 
 // --- Screen switching ---
-const ALL_SCREENS = ['select-screen','practice-screen','result-screen','shop-screen','vocab-select-screen','vocab-practice-screen','vocab-result-screen'];
+const ALL_SCREENS = ['select-screen','practice-screen','result-screen','shop-screen','vocab-select-screen','vocab-practice-screen','vocab-result-screen','grammar-select-screen','grammar-practice-screen','grammar-result-screen'];
 function hideAllScreens() {
   ALL_SCREENS.forEach(id => document.getElementById(id).style.display = 'none');
 }
@@ -1655,6 +1803,273 @@ function handleVocabResultEnter(e) {
     startVocabUnit(VOCAB_UNITS[nextIdx]);
   } else {
     showVocabSelect();
+  }
+}
+
+// ============================================
+// === GRAMMAR MODE ===
+// ============================================
+const GRAMMAR_UNITS = [
+  {
+    id: '7-8', title: 'Units 7-8', subtitle: 'should, must, would, so/because', sentences: [
+      { before: 'Anita ', answer: 'is having fun', after: ' with her new helmet at present.', hint: 'đang vui', rule: 'Present Continuous (đang làm gì)' },
+      { before: 'Children ', answer: 'should', after: ' learn to play a sport.', hint: 'nên', rule: 'should = nên làm gì' },
+      { before: 'Children ', answer: "shouldn't", after: ' watch TV many hours a day.', hint: 'không nên', rule: "shouldn't = không nên" },
+      { before: 'I ride my bike ', answer: 'once a week', after: '.', hint: 'một lần một tuần', rule: 'Tần suất: once / twice / three times...' },
+      { before: '', answer: 'Would you like to', after: ' live in a tree house?', hint: 'Bạn có muốn...?', rule: 'Would you like to + V = Bạn có muốn...?' },
+      { before: 'Yes, I ', answer: 'would', after: '.', hint: 'có (đồng ý)', rule: 'Trả lời: Yes, I would / No, I wouldn\'t' },
+      { before: 'You ', answer: 'must', after: ' kick the ball.', hint: 'phải', rule: 'must = bắt buộc phải' },
+      { before: 'You ', answer: "mustn't", after: ' touch the ball with your hands.', hint: 'không được', rule: "mustn't = cấm, không được" },
+      { before: "It's Saturday, ", answer: 'so', after: ' we can go to the shops.', hint: 'vì vậy', rule: 'so = vì vậy (kết quả)' },
+      { before: "I don't like cities ", answer: 'because', after: " they're noisy!", hint: 'bởi vì', rule: 'because = bởi vì (nguyên nhân)' },
+    ]
+  },
+];
+
+let currentGrammarUnit = null;
+let grammarSentenceIdx = 0;
+let grammarLetterIdx = 0;
+let grammarStats = []; // { sentence, answer, mistakes }
+
+// --- Grammar screens ---
+function showGrammarSelect() {
+  hideAllScreens();
+  document.getElementById('grammar-select-screen').style.display = 'block';
+  renderGrammarUnitGrid();
+}
+function showGrammarPractice() {
+  hideAllScreens();
+  document.getElementById('grammar-practice-screen').style.display = 'block';
+}
+function showGrammarResult() {
+  hideAllScreens();
+  document.getElementById('grammar-result-screen').style.display = 'block';
+}
+
+function renderGrammarUnitGrid() {
+  const grid = document.getElementById('grammar-unit-grid');
+  grid.innerHTML = '';
+  GRAMMAR_UNITS.forEach(unit => {
+    const card = document.createElement('div');
+    card.className = 'grammar-card';
+    card.onclick = () => startGrammarUnit(unit);
+    card.innerHTML = `
+      <div class="unit-num" style="background:#dc2626;">U${unit.id}</div>
+      <div class="unit-title">${unit.title}</div>
+      <div class="unit-count">${unit.subtitle}</div>
+      <div class="unit-count" style="margin-top:4px;">${unit.sentences.length} câu</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function startGrammarUnit(unit) {
+  currentGrammarUnit = unit;
+  grammarSentenceIdx = 0;
+  grammarLetterIdx = 0;
+  grammarStats = unit.sentences.map(s => ({ sentence: s.before + '___' + s.after, answer: s.answer, mistakes: 0 }));
+  document.getElementById('grammar-unit-title').textContent = 'Ngữ pháp: ' + unit.title;
+  document.getElementById('grammar-total').textContent = unit.sentences.length;
+  showGrammarPractice();
+  loadGrammarSentence();
+}
+
+function loadGrammarSentence() {
+  const s = currentGrammarUnit.sentences[grammarSentenceIdx];
+  grammarLetterIdx = 0;
+  document.getElementById('grammar-pos').textContent = grammarSentenceIdx + 1;
+  document.getElementById('grammar-hint-text').textContent = s.hint;
+  document.getElementById('grammar-hint-rule').textContent = s.rule;
+
+  // Build sentence display with blanks
+  const display = document.getElementById('sentence-display');
+  let html = escapeHtml(s.before);
+  html += '<span class="blank-area" id="grammar-blank">';
+  for (let i = 0; i < s.answer.length; i++) {
+    const ch = s.answer[i];
+    const isSpace = ch === ' ';
+    const isCurrent = i === 0;
+    html += `<span class="g-letter-box${isSpace ? ' g-space' : ''}${isCurrent ? ' g-current' : ''}" id="glb-${i}">${isSpace ? '' : ''}</span>`;
+  }
+  html += '</span>';
+  html += escapeHtml(s.after);
+  display.innerHTML = html;
+
+  // Keyboard
+  const firstChar = s.answer[0];
+  renderGrammarKeyboard(firstChar === ' ' ? null : firstChar);
+  updateGrammarFingerHint(firstChar);
+
+  // Speak sentence
+  setTimeout(() => speakWord(s.before + s.answer + s.after), 300);
+
+  document.removeEventListener('keydown', handleGrammarKeyPress);
+  document.addEventListener('keydown', handleGrammarKeyPress);
+}
+
+function escapeHtml(text) {
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderGrammarKeyboard(activeKey) {
+  const kb = document.getElementById('grammar-keyboard');
+  kb.innerHTML = '';
+  const rows = [
+    { keys: TOP_ROW, offset: 20 },
+    { keys: HOME_ROW, offset: 30 },
+    { keys: BOTTOM_ROW, offset: 45 },
+  ];
+  rows.forEach(rowData => {
+    const row = document.createElement('div');
+    row.className = 'kb-row';
+    row.style.paddingLeft = rowData.offset + 'px';
+    rowData.keys.forEach(key => {
+      const k = document.createElement('div');
+      const info = FINGER_MAP[key];
+      k.className = 'kb-key ' + info.cls;
+      if (activeKey && key === activeKey.toLowerCase()) k.classList.add('active');
+      if (BUMPS.includes(key)) k.classList.add('bump');
+      k.textContent = key.toUpperCase();
+      row.appendChild(k);
+    });
+    kb.appendChild(row);
+  });
+}
+
+function updateGrammarFingerHint(ch) {
+  const hint = document.getElementById('grammar-finger-hint');
+  if (!ch || ch === ' ') {
+    hint.innerHTML = 'Nhấn <strong>Space</strong> (phím cách)';
+    return;
+  }
+  if (ch === "'") {
+    hint.innerHTML = "Nhấn phím <strong>'</strong> (nháy đơn)";
+    return;
+  }
+  const info = FINGER_MAP[ch.toLowerCase()];
+  if (info) {
+    hint.innerHTML = `Dùng <strong>${info.finger}</strong> để nhấn phím <strong>${ch.toUpperCase()}</strong>`;
+  } else {
+    hint.innerHTML = `Nhấn phím <strong>${ch}</strong>`;
+  }
+}
+
+function handleGrammarKeyPress(e) {
+  if (!currentGrammarUnit) return;
+  const s = currentGrammarUnit.sentences[grammarSentenceIdx];
+  if (grammarLetterIdx >= s.answer.length) return;
+
+  const expected = s.answer[grammarLetterIdx];
+  let pressed = e.key;
+
+  // Accept single chars + space + apostrophe + dash
+  if (pressed === ' ') e.preventDefault();
+  if (pressed.length !== 1) return;
+
+  const box = document.getElementById('glb-' + grammarLetterIdx);
+
+  if (pressed.toLowerCase() === expected.toLowerCase()) {
+    box.className = 'g-letter-box g-correct' + (expected === ' ' ? ' g-space' : '');
+    box.textContent = expected === ' ' ? '' : expected;
+    grammarLetterIdx++;
+
+    if (grammarLetterIdx >= s.answer.length) {
+      // Sentence complete
+      document.removeEventListener('keydown', handleGrammarKeyPress);
+      speakWord(s.before + s.answer + s.after);
+      setTimeout(() => {
+        grammarSentenceIdx++;
+        if (grammarSentenceIdx >= currentGrammarUnit.sentences.length) {
+          showGrammarResults();
+        } else {
+          loadGrammarSentence();
+        }
+      }, 1500);
+    } else {
+      const nextBox = document.getElementById('glb-' + grammarLetterIdx);
+      if (nextBox) nextBox.classList.add('g-current');
+      const nextChar = s.answer[grammarLetterIdx];
+      renderGrammarKeyboard(nextChar === ' ' || nextChar === "'" ? null : nextChar);
+      updateGrammarFingerHint(nextChar);
+    }
+  } else {
+    box.classList.add('g-wrong');
+    grammarStats[grammarSentenceIdx].mistakes++;
+    setTimeout(() => box.classList.remove('g-wrong'), 400);
+  }
+}
+
+function showGrammarResults() {
+  document.removeEventListener('keydown', handleGrammarKeyPress);
+  const total = grammarStats.length;
+  const perfect = grammarStats.filter(s => s.mistakes === 0).length;
+  const pct = Math.round((perfect / total) * 100);
+
+  document.getElementById('grammar-result-title').textContent = 'Kết quả Ngữ pháp: ' + currentGrammarUnit.title;
+  const scoreEl = document.getElementById('grammar-result-score');
+  scoreEl.textContent = pct + '%';
+  scoreEl.className = 'result-score ' + (pct >= 90 ? 'score-great' : pct >= 70 ? 'score-good' : pct >= 50 ? 'score-ok' : 'score-bad');
+
+  const starCount = pct >= 95 ? 3 : pct >= 90 ? 2 : pct >= 80 ? 1 : 0;
+  const starsEl = document.getElementById('grammar-result-stars');
+  let starsHTML = '';
+  for (let i = 0; i < 3; i++) {
+    starsHTML += i < starCount ? '<span class="star">&#11088;</span>' : '<span class="star star-empty">&#11088;</span>';
+  }
+  starsEl.innerHTML = starsHTML;
+
+  const earnedNote = document.getElementById('grammar-stars-earned');
+  if (starCount > 0) {
+    setTotalStars(getTotalStars() + starCount);
+    earnedNote.innerHTML = `&#11088; +${starCount} sao! (Tổng: ${getTotalStars()} sao)`;
+    earnedNote.style.display = 'inline-block';
+  } else {
+    earnedNote.style.display = 'none';
+  }
+
+  const msgEl = document.getElementById('grammar-result-message');
+  if (pct >= 95) msgEl.textContent = 'Xuất sắc! Con nắm ngữ pháp rất tốt!';
+  else if (pct >= 80) msgEl.textContent = 'Tốt lắm! Cố gắng chính xác hơn nhé!';
+  else if (pct >= 50) msgEl.textContent = 'Khá tốt! Hãy đọc lại gợi ý và tập thêm!';
+  else msgEl.textContent = 'Cố gắng hơn nhé! Nhớ quy tắc ngữ pháp và tập lại!';
+
+  const tbody = document.getElementById('grammar-stats-body');
+  tbody.innerHTML = '';
+  grammarStats.forEach((s, i) => {
+    const sen = currentGrammarUnit.sentences[i];
+    const perfect = s.mistakes === 0;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="text-align:left;font-size:0.9em;">${escapeHtml(sen.before)}<strong style="color:#dc2626">___</strong>${escapeHtml(sen.after)}</td>
+      <td style="color:#dc2626;font-weight:700;">${escapeHtml(s.answer)}</td>
+      <td class="${perfect ? 'vocab-word-perfect' : 'vocab-word-missed'}">${perfect ? '&#10004; Đúng' : '&#10008; Có lỗi'}</td>
+      <td>${s.mistakes}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('grammar-btn-retry').onclick = () => startGrammarUnit(currentGrammarUnit);
+  const nextIdx = GRAMMAR_UNITS.findIndex(u => u.id === currentGrammarUnit.id) + 1;
+  const btnNext = document.getElementById('grammar-btn-next');
+  if (nextIdx < GRAMMAR_UNITS.length) {
+    btnNext.style.display = '';
+    btnNext.onclick = () => startGrammarUnit(GRAMMAR_UNITS[nextIdx]);
+  } else {
+    btnNext.style.display = 'none';
+  }
+
+  document.addEventListener('keydown', handleGrammarResultEnter);
+  showGrammarResult();
+}
+
+function handleGrammarResultEnter(e) {
+  if (e.key !== 'Enter') return;
+  document.removeEventListener('keydown', handleGrammarResultEnter);
+  const nextIdx = GRAMMAR_UNITS.findIndex(u => u.id === currentGrammarUnit.id) + 1;
+  if (nextIdx < GRAMMAR_UNITS.length) {
+    startGrammarUnit(GRAMMAR_UNITS[nextIdx]);
+  } else {
+    showGrammarSelect();
   }
 }
 

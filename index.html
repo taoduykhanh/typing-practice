@@ -1589,6 +1589,16 @@ function speakWord(word) {
   applyVoice(u);
   speechSynthesis.speak(u);
 }
+
+function speakAndThen(word, callback) {
+  if (!window.speechSynthesis) { callback(); return; }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(word);
+  applyVoice(u);
+  u.onend = () => callback();
+  u.onerror = () => callback();
+  speechSynthesis.speak(u);
+}
 function speakCurrentWord() {
   if (!currentVocabUnit) return;
   speakWord(currentVocabUnit.words[vocabWordIdx].en);
@@ -2034,17 +2044,18 @@ function handleGrammarKeyPress(e) {
     grammarLetterIdx++;
 
     if (grammarLetterIdx >= s.answer.length) {
-      // Sentence complete
+      // Sentence complete - speak full sentence, wait for it to finish, then move on
       document.removeEventListener('keydown', handleGrammarKeyPress);
-      speakWord(s.before + s.answer + s.after);
-      setTimeout(() => {
-        grammarSentenceIdx++;
-        if (grammarSentenceIdx >= currentGrammarUnit.sentences.length) {
-          showGrammarResults();
-        } else {
-          loadGrammarSentence();
-        }
-      }, 1500);
+      speakAndThen(s.before + s.answer + s.after, () => {
+        setTimeout(() => {
+          grammarSentenceIdx++;
+          if (grammarSentenceIdx >= currentGrammarUnit.sentences.length) {
+            showGrammarResults();
+          } else {
+            loadGrammarSentence();
+          }
+        }, 500);
+      });
     } else {
       const nextBox = document.getElementById('glb-' + grammarLetterIdx);
       if (nextBox) nextBox.classList.add('g-current');

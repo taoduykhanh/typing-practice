@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luyện Gõ 10 Ngón - Của Huyền My</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+  }
+  .container {
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    max-width: 900px;
+    width: 100%;
+    padding: 40px;
+    margin-top: 10px;
+  }
+  h1 {
+    text-align: center;
+    color: #4a3f8a;
+    font-size: 2em;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+  h1 .owner-name {
+    display: block;
+    font-size: 1.5em;
+    color: #e91e90;
+    margin-top: 4px;
+  }
+  .subtitle {
+    text-align: center;
+    color: #888;
+    font-size: 1em;
+    margin-bottom: 30px;
+  }
+
+  /* === LESSON SELECT === */
+  .lesson-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .lesson-card {
+    background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+    border: 2px solid #c4b5fd;
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .lesson-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(124,58,237,0.25);
+    border-color: #8b5cf6;
+  }
+  .lesson-card .lesson-num {
+    background: #7c3aed;
+    color: #fff;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+  }
+  .lesson-card .lesson-title {
+    font-weight: 700;
+    color: #4a3f8a;
+    font-size: 1.1em;
+    margin-bottom: 6px;
+  }
+  .lesson-card .lesson-keys {
+    color: #7c3aed;
+    font-size: 1.3em;
+    font-weight: bold;
+    letter-spacing: 4px;
+    margin-bottom: 6px;
+  }
+  .lesson-card .lesson-desc {
+    color: #777;
+    font-size: 0.85em;
+  }
+
+  /* === PRACTICE === */
+  #practice-screen, #result-screen { display: none; }
+  .back-btn {
+    background: none;
+    border: none;
+    color: #7c3aed;
+    font-size: 1em;
+    cursor: pointer;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  .back-btn:hover { text-decoration: underline; }
+  .practice-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .practice-header h2 {
+    color: #4a3f8a;
+    font-size: 1.5em;
+  }
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 12px 0 20px;
+    font-size: 1.1em;
+  }
+  .stats-bar span { font-weight: 600; }
+  .stat-correct { color: #16a34a; }
+  .stat-wrong { color: #dc2626; }
+  .stat-progress { color: #7c3aed; }
+
+  /* typing area */
+  .typing-area {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 30px;
+    text-align: center;
+    margin-bottom: 24px;
+    min-height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2px;
+    font-size: 3em;
+    font-family: 'Consolas', 'Courier New', monospace;
+    letter-spacing: 8px;
+    user-select: none;
+  }
+  .char {
+    display: inline-block;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .char.current {
+    background: #ddd6fe;
+    color: #7c3aed;
+    animation: pulse 0.8s ease-in-out infinite alternate;
+  }
+  .char.correct { color: #16a34a; }
+  .char.wrong {
+    color: #dc2626;
+    background: #fee2e2;
+    text-decoration: underline wavy #dc2626;
+  }
+  .char.pending { color: #94a3b8; }
+  @keyframes pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.15); }
+  }
+
+  /* finger hint */
+  .finger-hint {
+    text-align: center;
+    margin-bottom: 16px;
+    font-size: 1.1em;
+    color: #555;
+    min-height: 28px;
+  }
+  .finger-hint strong { color: #7c3aed; }
+
+  /* virtual keyboard */
+  .keyboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .kb-row {
+    display: flex;
+    gap: 5px;
+  }
+  .kb-key {
+    width: 52px; height: 52px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1em;
+    font-weight: 700;
+    border: 2px solid #d1d5db;
+    background: #f9fafb;
+    color: #374151;
+    transition: all 0.15s;
+    text-transform: uppercase;
+  }
+  /* finger colors */
+  .finger-pinky-l  { background: #fde68a; border-color: #f59e0b; color: #92400e; }
+  .finger-ring-l   { background: #bbf7d0; border-color: #22c55e; color: #166534; }
+  .finger-middle-l  { background: #bfdbfe; border-color: #3b82f6; color: #1e3a5f; }
+  .finger-index-l  { background: #fecaca; border-color: #ef4444; color: #991b1b; }
+  .finger-index-r  { background: #fed7aa; border-color: #f97316; color: #9a3412; }
+  .finger-middle-r  { background: #bfdbfe; border-color: #3b82f6; color: #1e3a5f; }
+  .finger-ring-r   { background: #bbf7d0; border-color: #22c55e; color: #166534; }
+  .finger-pinky-r  { background: #fde68a; border-color: #f59e0b; color: #92400e; }
+
+  .kb-key.active {
+    transform: scale(1.15);
+    box-shadow: 0 0 20px rgba(124,58,237,0.5);
+    border-color: #7c3aed !important;
+    z-index: 2;
+  }
+  .kb-key.bump::after {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    width: 14px;
+    height: 3px;
+    background: currentColor;
+    border-radius: 2px;
+    opacity: 0.5;
+  }
+  .kb-key { position: relative; }
+  .kb-key.dimmed { opacity: 0.25; transform: scale(0.92); }
+
+  /* === RESULTS === */
+  .result-box {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .result-score {
+    font-size: 4em;
+    font-weight: 900;
+    margin: 10px 0;
+  }
+  .score-great { color: #16a34a; }
+  .score-good { color: #2563eb; }
+  .score-ok { color: #f59e0b; }
+  .score-bad { color: #dc2626; }
+  .result-stars {
+    font-size: 3.5em;
+    margin: 10px 0;
+    letter-spacing: 10px;
+    min-height: 60px;
+  }
+  .star {
+    display: inline-block;
+    transition: all 0.4s;
+    animation: starPop 0.5s ease-out backwards;
+  }
+  .star:nth-child(1) { animation-delay: 0.2s; }
+  .star:nth-child(2) { animation-delay: 0.5s; }
+  .star:nth-child(3) { animation-delay: 0.8s; }
+  .star-empty { opacity: 0.2; filter: grayscale(1); }
+  @keyframes starPop {
+    0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+    60% { transform: scale(1.3) rotate(10deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  .result-message {
+    font-size: 1.3em;
+    margin: 10px 0 20px;
+    color: #4a3f8a;
+    font-weight: 600;
+  }
+
+  /* per-key stats table */
+  .key-stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+  }
+  .key-stats-table th {
+    background: #7c3aed;
+    color: #fff;
+    padding: 10px;
+    font-size: 0.95em;
+  }
+  .key-stats-table th:first-child { border-radius: 10px 0 0 0; }
+  .key-stats-table th:last-child { border-radius: 0 10px 0 0; }
+  .key-stats-table td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 1em;
+  }
+  .key-stats-table tr:last-child td:first-child { border-radius: 0 0 0 10px; }
+  .key-stats-table tr:last-child td:last-child { border-radius: 0 0 10px 0; }
+  .key-stats-table tr:hover { background: #f5f3ff; }
+  .key-stats-table .key-cell {
+    font-weight: 800;
+    font-size: 1.2em;
+    color: #7c3aed;
+  }
+  .weak-key { background: #fef2f2 !important; }
+  .bar-container {
+    width: 100%;
+    height: 10px;
+    background: #e5e7eb;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.5s;
+  }
+
+  .result-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 14px 32px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+  .btn-primary { background: #7c3aed; color: #fff; }
+  .btn-secondary { background: #e5e7eb; color: #374151; }
+  .btn-success { background: #16a34a; color: #fff; }
+
+  .advice-box {
+    background: #fffbeb;
+    border: 2px solid #f59e0b;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    text-align: left;
+  }
+  .advice-box h3 { color: #b45309; margin-bottom: 8px; }
+  .advice-box p { color: #92400e; line-height: 1.6; }
+
+  /* === STAR BALANCE HEADER === */
+  .star-balance {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .star-wallet {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border: 2px solid #f59e0b;
+    border-radius: 30px;
+    padding: 8px 20px;
+    font-size: 1.2em;
+    font-weight: 700;
+    color: #92400e;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .shop-btn {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    padding: 10px 24px;
+    font-size: 1.05em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .shop-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(249,115,22,0.4); }
+
+  /* === SHOP SCREEN === */
+  #shop-screen { display: none; }
+  .shop-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .shop-tab {
+    padding: 8px 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 30px;
+    background: #f9fafb;
+    font-weight: 600;
+    font-size: 0.95em;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .shop-tab.active {
+    background: #7c3aed;
+    color: #fff;
+    border-color: #7c3aed;
+  }
+  .shop-tab:hover:not(.active) { border-color: #7c3aed; color: #7c3aed; }
+  .shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .shop-item {
+    background: #fff;
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 20px 16px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .shop-item:hover { border-color: #c4b5fd; box-shadow: 0 4px 15px rgba(124,58,237,0.15); }
+  .shop-item .item-emoji { font-size: 3em; margin-bottom: 8px; }
+  .shop-item .item-name { font-weight: 700; color: #374151; margin-bottom: 4px; }
+  .shop-item .item-price { color: #f59e0b; font-weight: 700; margin-bottom: 12px; font-size: 1.05em; }
+  .shop-item .buy-btn {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.95em;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+  }
+  .buy-btn.can-buy { background: #16a34a; color: #fff; }
+  .buy-btn.can-buy:hover { background: #15803d; transform: translateY(-1px); }
+  .buy-btn.no-afford { background: #e5e7eb; color: #9ca3af; cursor: not-allowed; }
+  .buy-btn.owned { background: #ddd6fe; color: #7c3aed; cursor: default; }
+  .shop-item.owned-item { border-color: #a78bfa; background: #f5f3ff; }
+
+  /* inventory */
+  .inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .inv-item {
+    background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+    border: 2px solid #c4b5fd;
+    border-radius: 14px;
+    padding: 16px 10px;
+    text-align: center;
+    animation: invPop 0.3s ease-out;
+  }
+  .inv-item .item-emoji { font-size: 2.5em; }
+  .inv-item .item-name { font-size: 0.85em; font-weight: 600; color: #4a3f8a; margin-top: 6px; }
+  @keyframes invPop {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .empty-inventory {
+    text-align: center;
+    color: #9ca3af;
+    padding: 40px;
+    font-size: 1.1em;
+  }
+  .empty-inventory .big-emoji { font-size: 3em; display: block; margin-bottom: 12px; }
+
+  /* buy success animation */
+  .buy-success {
+    animation: buyBounce 0.4s ease-out;
+  }
+  @keyframes buyBounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  /* star earned notification on result screen */
+  .stars-earned-note {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border: 2px solid #f59e0b;
+    border-radius: 12px;
+    padding: 10px 20px;
+    display: inline-block;
+    font-weight: 700;
+    color: #92400e;
+    font-size: 1.05em;
+    margin-bottom: 16px;
+  }
+
+  /* === VOCAB === */
+  .vocab-btn {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    padding: 10px 24px;
+    font-size: 1.05em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .vocab-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(37,99,235,0.4); }
+  #vocab-select-screen, #vocab-practice-screen, #vocab-result-screen { display: none; }
+  .unit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .unit-card {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border: 2px solid #93c5fd;
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .unit-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(37,99,235,0.25);
+    border-color: #3b82f6;
+  }
+  .unit-card .unit-num {
+    background: #2563eb;
+    color: #fff;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 10px;
+  }
+  .unit-card .unit-title { font-weight: 700; color: #1e3a5f; font-size: 1.15em; margin-bottom: 4px; }
+  .unit-card .unit-count { color: #6b7280; font-size: 0.9em; }
+
+  /* vocab practice */
+  .vocab-progress {
+    text-align: center;
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #7c3aed;
+    margin-bottom: 16px;
+  }
+  .word-display {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .word-vi {
+    font-size: 2.2em;
+    font-weight: 800;
+    color: #1e3a5f;
+    margin-bottom: 8px;
+  }
+  .speak-btn {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 50px; height: 50px;
+    font-size: 1.5em;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 8px 0;
+  }
+  .speak-btn:hover { background: #1d4ed8; transform: scale(1.1); }
+  .speak-btn:active { transform: scale(0.95); }
+
+  .letter-boxes {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .letter-box {
+    width: 48px; height: 56px;
+    border: 3px solid #d1d5db;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8em;
+    font-weight: 800;
+    font-family: 'Consolas', monospace;
+    text-transform: uppercase;
+    background: #f9fafb;
+    transition: all 0.15s;
+  }
+  .letter-box.current {
+    border-color: #7c3aed;
+    background: #ede9fe;
+    animation: pulse 0.8s ease-in-out infinite alternate;
+  }
+  .letter-box.correct {
+    border-color: #16a34a;
+    background: #dcfce7;
+    color: #16a34a;
+  }
+  .letter-box.wrong {
+    border-color: #dc2626;
+    background: #fee2e2;
+    color: #dc2626;
+    animation: shake 0.3s;
+  }
+  .letter-box.space-box { width: 30px; border-style: dashed; opacity: 0.5; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+  .word-complete {
+    animation: wordPop 0.5s ease-out;
+  }
+  @keyframes wordPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  /* vocab result table */
+  .vocab-stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+  }
+  .vocab-stats-table th {
+    background: #2563eb;
+    color: #fff;
+    padding: 10px;
+    font-size: 0.95em;
+  }
+  .vocab-stats-table th:first-child { border-radius: 10px 0 0 0; }
+  .vocab-stats-table th:last-child { border-radius: 0 10px 0 0; }
+  .vocab-stats-table td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .vocab-stats-table tr:hover { background: #eff6ff; }
+  .vocab-stats-table .word-en { font-weight: 700; color: #2563eb; font-size: 1.05em; }
+  .vocab-stats-table .word-vi-cell { color: #555; }
+  .vocab-word-perfect { color: #16a34a; font-weight: 700; }
+  .vocab-word-missed { color: #dc2626; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- LESSON SELECT SCREEN -->
+  <div id="select-screen">
+    <h1>Luyện Gõ 10 Ngón<span class="owner-name">Của Huyền My</span></h1>
+    <p class="subtitle">Chọn bài tập để bắt đầu luyện gõ!</p>
+    <div class="star-balance">
+      <div class="star-wallet">&#11088; <span id="star-count">0</span> sao</div>
+      <button class="vocab-btn" onclick="showVocabSelect()">&#128214; Từ vựng</button>
+      <button class="shop-btn" onclick="showShop()">&#128722; Cửa hàng</button>
+    </div>
+    <div class="lesson-grid" id="lesson-grid"></div>
+  </div>
+
+  <!-- SHOP SCREEN -->
+  <div id="shop-screen">
+    <button class="back-btn" onclick="showSelect()">&larr; Quay lại</button>
+    <h1>&#128722; Cửa Hàng</h1>
+    <div class="star-balance" style="justify-content:center; margin-top:10px;">
+      <div class="star-wallet">&#11088; <span id="shop-star-count">0</span> sao</div>
+    </div>
+    <div class="shop-tabs" id="shop-tabs"></div>
+    <div class="shop-grid" id="shop-grid"></div>
+    <hr style="border:none;border-top:2px solid #e5e7eb;margin:24px 0;">
+    <h2 style="color:#4a3f8a;margin-bottom:8px;">&#127890; Tủ đồ của con</h2>
+    <div id="inventory-area"></div>
+  </div>
+
+  <!-- VOCAB SELECT SCREEN -->
+  <div id="vocab-select-screen">
+    <button class="back-btn" onclick="showSelect()">&larr; Quay lại</button>
+    <h1>&#128214; Từ Vựng Tiếng Anh</h1>
+    <p class="subtitle">Chọn unit để vừa học từ vừa luyện gõ!</p>
+    <div class="unit-grid" id="unit-grid"></div>
+  </div>
+
+  <!-- VOCAB PRACTICE SCREEN -->
+  <div id="vocab-practice-screen">
+    <button class="back-btn" onclick="showVocabSelect()">&larr; Quay lại chọn unit</button>
+    <h2 id="vocab-unit-title" style="text-align:center;color:#1e3a5f;margin-bottom:8px;"></h2>
+    <div class="vocab-progress">Từ <span id="vocab-pos">1</span> / <span id="vocab-total">0</span></div>
+    <div class="word-display">
+      <div class="word-vi" id="word-vi"></div>
+      <button class="speak-btn" id="speak-btn" onclick="speakCurrentWord()">&#128264;</button>
+    </div>
+    <div class="letter-boxes" id="letter-boxes"></div>
+    <div class="finger-hint" id="vocab-finger-hint"></div>
+    <div class="keyboard" id="vocab-keyboard"></div>
+  </div>
+
+  <!-- VOCAB RESULT SCREEN -->
+  <div id="vocab-result-screen">
+    <button class="back-btn" onclick="showVocabSelect()">&larr; Quay lại chọn unit</button>
+    <div class="result-box">
+      <h2 id="vocab-result-title"></h2>
+      <div class="result-score" id="vocab-result-score"></div>
+      <div class="result-stars" id="vocab-result-stars"></div>
+      <div class="result-message" id="vocab-result-message"></div>
+      <div class="stars-earned-note" id="vocab-stars-earned" style="display:none;"></div>
+    </div>
+    <table class="vocab-stats-table">
+      <thead>
+        <tr>
+          <th>Từ tiếng Anh</th>
+          <th>Nghĩa</th>
+          <th>Kết quả</th>
+          <th>Số lần sai</th>
+        </tr>
+      </thead>
+      <tbody id="vocab-stats-body"></tbody>
+    </table>
+    <div class="result-buttons">
+      <button class="btn btn-primary" id="vocab-btn-retry">Tập lại unit này</button>
+      <button class="btn btn-success" id="vocab-btn-next">Unit tiếp theo</button>
+      <button class="btn btn-secondary" onclick="showVocabSelect()">Chọn unit khác</button>
+    </div>
+  </div>
+
+  <!-- PRACTICE SCREEN -->
+  <div id="practice-screen">
+    <button class="back-btn" onclick="showSelect()">&larr; Quay lại chọn bài</button>
+    <div class="practice-header">
+      <h2 id="practice-title"></h2>
+    </div>
+    <div class="stats-bar">
+      <span class="stat-progress">Tiến độ: <span id="stat-pos">0</span>/<span id="stat-total">0</span></span>
+      <span class="stat-correct">Đúng: <span id="stat-correct">0</span></span>
+      <span class="stat-wrong">Sai: <span id="stat-wrong">0</span></span>
+    </div>
+    <div class="typing-area" id="typing-area"></div>
+    <div class="finger-hint" id="finger-hint"></div>
+    <div class="keyboard" id="keyboard"></div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="result-screen">
+    <button class="back-btn" onclick="showSelect()">&larr; Quay lại chọn bài</button>
+    <div class="result-box">
+      <h2 id="result-title"></h2>
+      <div class="result-score" id="result-score"></div>
+      <div class="result-stars" id="result-stars"></div>
+      <div class="result-message" id="result-message"></div>
+      <div class="stars-earned-note" id="stars-earned-note" style="display:none;"></div>
+    </div>
+    <div class="advice-box" id="advice-box">
+      <h3>Lời khuyên cho lần sau</h3>
+      <p id="advice-text"></p>
+    </div>
+    <table class="key-stats-table">
+      <thead>
+        <tr>
+          <th>Phím</th>
+          <th>Tổng lần gõ</th>
+          <th>Đúng</th>
+          <th>Sai</th>
+          <th>Tỷ lệ đúng</th>
+          <th>Mức độ</th>
+        </tr>
+      </thead>
+      <tbody id="key-stats-body"></tbody>
+    </table>
+    <div class="result-buttons">
+      <button class="btn btn-primary" id="btn-retry">Tập lại bài này</button>
+      <button class="btn btn-success" id="btn-next">Bài tiếp theo</button>
+      <button class="btn btn-secondary" onclick="showSelect()">Chọn bài khác</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TOP_ROW = ['q','w','e','r','t','y','u','i','o','p'];
+const HOME_ROW = ['a','s','d','f','g','h','j','k','l',';'];
+const BOTTOM_ROW = ['z','x','c','v','b','n','m',',','.','/'];
+const ALL_KEYS = [...TOP_ROW, ...HOME_ROW, ...BOTTOM_ROW];
+const BUMPS = ['f','j'];
+
+const LESSONS = [
+  // Cấp 1 - Hàng chính
+  { id: 1, title: "Ngón trỏ cơ bản", keys: ['f','j'], desc: "Hai phím có gờ nổi - vị trí xuất phát", level: "Hàng chính" },
+  { id: 2, title: "Ngón giữa", keys: ['d','k'], desc: "Luyện hai ngón giữa", level: "Hàng chính" },
+  { id: 3, title: "Ngón áp út", keys: ['s','l'], desc: "Luyện hai ngón áp út", level: "Hàng chính" },
+  { id: 4, title: "Ngón út", keys: ['a',';'], desc: "Luyện hai ngón út", level: "Hàng chính" },
+  { id: 5, title: "Vươn vào giữa", keys: ['g','h'], desc: "Ngón trỏ vươn vào giữa bàn phím", level: "Hàng chính" },
+  { id: 6, title: "Kết hợp trỏ+giữa", keys: ['f','j','d','k'], desc: "Ngón trỏ + ngón giữa", level: "Hàng chính" },
+  { id: 7, title: "Tay trái", keys: ['a','s','d','f','g'], desc: "Toàn bộ tay trái", level: "Hàng chính" },
+  { id: 8, title: "Toàn bộ hàng chính", keys: ['a','s','d','f','g','h','j','k','l',';'], desc: "Tất cả phím hàng chính", level: "Hàng chính" },
+  // Cấp 2 - Hàng trên
+  { id: 9, title: "Ngón trỏ hàng trên", keys: ['r','u'], desc: "Ngón trỏ vươn lên hàng trên", level: "Hàng trên" },
+  { id: 10, title: "Ngón giữa hàng trên", keys: ['e','i'], desc: "Ngón giữa vươn lên hàng trên", level: "Hàng trên" },
+  { id: 11, title: "Ngón áp út hàng trên", keys: ['w','o'], desc: "Ngón áp út vươn lên hàng trên", level: "Hàng trên" },
+  { id: 12, title: "Ngón út hàng trên", keys: ['q','p'], desc: "Ngón út vươn lên hàng trên", level: "Hàng trên" },
+  { id: 13, title: "Vươn giữa hàng trên", keys: ['t','y'], desc: "Ngón trỏ vươn vào giữa hàng trên", level: "Hàng trên" },
+  { id: 14, title: "Toàn bộ hàng trên", keys: ['q','w','e','r','t','y','u','i','o','p'], desc: "Tất cả phím hàng trên", level: "Hàng trên" },
+  // Cấp 3 - Hàng dưới
+  { id: 15, title: "Ngón trỏ hàng dưới", keys: ['v','m'], desc: "Ngón trỏ xuống hàng dưới", level: "Hàng dưới" },
+  { id: 16, title: "Ngón giữa hàng dưới", keys: ['c',','], desc: "Ngón giữa xuống hàng dưới", level: "Hàng dưới" },
+  { id: 17, title: "Ngón áp út hàng dưới", keys: ['x','.'], desc: "Ngón áp út xuống hàng dưới", level: "Hàng dưới" },
+  { id: 18, title: "Ngón út hàng dưới", keys: ['z','/'], desc: "Ngón út xuống hàng dưới", level: "Hàng dưới" },
+  { id: 19, title: "Vươn giữa hàng dưới", keys: ['b','n'], desc: "Ngón trỏ vươn vào giữa hàng dưới", level: "Hàng dưới" },
+  { id: 20, title: "Toàn bộ hàng dưới", keys: ['z','x','c','v','b','n','m',',','.','/'], desc: "Tất cả phím hàng dưới", level: "Hàng dưới" },
+  // Cấp 4 - Kết hợp
+  { id: 21, title: "Hàng chính + trên", keys: ['a','s','d','f','g','h','j','k','l',';','q','w','e','r','t','y','u','i','o','p'], desc: "Kết hợp 2 hàng phím", level: "Kết hợp" },
+  { id: 22, title: "Hàng chính + dưới", keys: ['a','s','d','f','g','h','j','k','l',';','z','x','c','v','b','n','m',',','.','/'], desc: "Kết hợp 2 hàng phím", level: "Kết hợp" },
+  { id: 23, title: "Toàn bộ bàn phím", keys: [...TOP_ROW, ...HOME_ROW, ...BOTTOM_ROW], desc: "Tất cả 30 phím!", level: "Kết hợp" },
+];
+
+const FINGER_MAP = {
+  // Hàng trên
+  'q': { finger: 'Ngón út trái', cls: 'finger-pinky-l' },
+  'w': { finger: 'Ngón áp út trái', cls: 'finger-ring-l' },
+  'e': { finger: 'Ngón giữa trái', cls: 'finger-middle-l' },
+  'r': { finger: 'Ngón trỏ trái', cls: 'finger-index-l' },
+  't': { finger: 'Ngón trỏ trái (vươn)', cls: 'finger-index-l' },
+  'y': { finger: 'Ngón trỏ phải (vươn)', cls: 'finger-index-r' },
+  'u': { finger: 'Ngón trỏ phải', cls: 'finger-index-r' },
+  'i': { finger: 'Ngón giữa phải', cls: 'finger-middle-r' },
+  'o': { finger: 'Ngón áp út phải', cls: 'finger-ring-r' },
+  'p': { finger: 'Ngón út phải', cls: 'finger-pinky-r' },
+  // Hàng chính
+  'a': { finger: 'Ngón út trái', cls: 'finger-pinky-l' },
+  's': { finger: 'Ngón áp út trái', cls: 'finger-ring-l' },
+  'd': { finger: 'Ngón giữa trái', cls: 'finger-middle-l' },
+  'f': { finger: 'Ngón trỏ trái', cls: 'finger-index-l' },
+  'g': { finger: 'Ngón trỏ trái (vươn)', cls: 'finger-index-l' },
+  'h': { finger: 'Ngón trỏ phải (vươn)', cls: 'finger-index-r' },
+  'j': { finger: 'Ngón trỏ phải', cls: 'finger-index-r' },
+  'k': { finger: 'Ngón giữa phải', cls: 'finger-middle-r' },
+  'l': { finger: 'Ngón áp út phải', cls: 'finger-ring-r' },
+  ';': { finger: 'Ngón út phải', cls: 'finger-pinky-r' },
+  // Hàng dưới
+  'z': { finger: 'Ngón út trái', cls: 'finger-pinky-l' },
+  'x': { finger: 'Ngón áp út trái', cls: 'finger-ring-l' },
+  'c': { finger: 'Ngón giữa trái', cls: 'finger-middle-l' },
+  'v': { finger: 'Ngón trỏ trái', cls: 'finger-index-l' },
+  'b': { finger: 'Ngón trỏ trái (vươn)', cls: 'finger-index-l' },
+  'n': { finger: 'Ngón trỏ phải (vươn)', cls: 'finger-index-r' },
+  'm': { finger: 'Ngón trỏ phải', cls: 'finger-index-r' },
+  ',': { finger: 'Ngón giữa phải', cls: 'finger-middle-r' },
+  '.': { finger: 'Ngón áp út phải', cls: 'finger-ring-r' },
+  '/': { finger: 'Ngón út phải', cls: 'finger-pinky-r' },
+};
+
+const CHARS_PER_LESSON = 30;
+
+let currentLesson = null;
+let sequence = [];
+let pos = 0;
+let correctCount = 0;
+let wrongCount = 0;
+let keyStats = {};
+
+// --- Render lesson grid ---
+function renderLessons() {
+  const grid = document.getElementById('lesson-grid');
+  grid.innerHTML = '';
+  const LEVEL_COLORS = { 'Hàng chính': '#7c3aed', 'Hàng trên': '#2563eb', 'Hàng dưới': '#16a34a', 'Kết hợp': '#dc2626' };
+  let lastLevel = '';
+  LESSONS.forEach(lesson => {
+    // Level header
+    if (lesson.level !== lastLevel) {
+      lastLevel = lesson.level;
+      const header = document.createElement('div');
+      header.style.cssText = 'grid-column:1/-1;margin-top:12px;margin-bottom:4px;';
+      header.innerHTML = `<h3 style="color:${LEVEL_COLORS[lesson.level] || '#4a3f8a'};font-size:1.15em;">${lesson.level}</h3>`;
+      grid.appendChild(header);
+    }
+    const card = document.createElement('div');
+    card.className = 'lesson-card';
+    card.onclick = () => startLesson(lesson);
+    const displayKeys = lesson.keys.length > 10
+      ? lesson.keys.slice(0, 8).map(k => k.toUpperCase()).join(' ') + ' ...'
+      : lesson.keys.map(k => k.toUpperCase()).join(' ');
+    card.innerHTML = `
+      <div class="lesson-num" style="background:${LEVEL_COLORS[lesson.level] || '#7c3aed'}">${lesson.id}</div>
+      <div class="lesson-title">${lesson.title}</div>
+      <div class="lesson-keys">${displayKeys}</div>
+      <div class="lesson-desc">${lesson.desc}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// --- Screen switching ---
+// === SHOP DATA ===
+const SHOP_CATEGORIES = [
+  { id: 'school', name: 'Đồ dùng học tập', emoji: '&#9999;&#65039;' },
+  { id: 'manga', name: 'Truyện tranh', emoji: '&#128218;' },
+  { id: 'electronics', name: 'Đồ điện tử', emoji: '&#128241;' },
+  { id: 'fun', name: 'Giải trí', emoji: '&#127918;' },
+];
+const SHOP_ITEMS = [
+  { id: 'pencil', name: 'Bút chì màu', emoji: '&#128397;', price: 3, cat: 'school' },
+  { id: 'notebook', name: 'Sách vở đẹp', emoji: '&#128211;', price: 4, cat: 'school' },
+  { id: 'backpack', name: 'Cặp sách mới', emoji: '&#127890;', price: 5, cat: 'school' },
+  { id: 'ruler', name: 'Bộ thước kẻ', emoji: '&#128207;', price: 3, cat: 'school' },
+  { id: 'doraemon', name: 'Truyện Doraemon', emoji: '&#128214;', price: 6, cat: 'manga' },
+  { id: 'naruto', name: 'Truyện Naruto', emoji: '&#128216;', price: 8, cat: 'manga' },
+  { id: 'onepiece', name: 'Truyện One Piece', emoji: '&#128213;', price: 10, cat: 'manga' },
+  { id: 'conan', name: 'Truyện Conan', emoji: '&#128215;', price: 7, cat: 'manga' },
+  { id: 'headphone', name: 'Tai nghe', emoji: '&#127911;', price: 12, cat: 'electronics' },
+  { id: 'smartwatch', name: 'Đồng hồ thông minh', emoji: '&#8986;', price: 15, cat: 'electronics' },
+  { id: 'keyboard', name: 'Bàn phím cơ', emoji: '&#9000;', price: 18, cat: 'electronics' },
+  { id: 'tablet', name: 'Máy tính bảng', emoji: '&#128241;', price: 20, cat: 'electronics' },
+  { id: 'sticker', name: 'Bộ sticker', emoji: '&#127912;', price: 2, cat: 'fun' },
+  { id: 'puzzle', name: 'Xếp hình', emoji: '&#129513;', price: 5, cat: 'fun' },
+  { id: 'teddy', name: 'Gấu bông', emoji: '&#129528;', price: 8, cat: 'fun' },
+  { id: 'robot', name: 'Robot đồ chơi', emoji: '&#129302;', price: 14, cat: 'fun' },
+];
+
+// === LOCAL STORAGE ===
+function getTotalStars() {
+  return parseInt(localStorage.getItem('typingStars') || '0');
+}
+function setTotalStars(n) {
+  localStorage.setItem('typingStars', String(n));
+  updateStarDisplays();
+}
+function getPurchasedItems() {
+  return JSON.parse(localStorage.getItem('typingPurchased') || '[]');
+}
+function setPurchasedItems(arr) {
+  localStorage.setItem('typingPurchased', JSON.stringify(arr));
+}
+function updateStarDisplays() {
+  const stars = getTotalStars();
+  const el1 = document.getElementById('star-count');
+  const el2 = document.getElementById('shop-star-count');
+  if (el1) el1.textContent = stars;
+  if (el2) el2.textContent = stars;
+}
+
+// --- Screen switching ---
+const ALL_SCREENS = ['select-screen','practice-screen','result-screen','shop-screen','vocab-select-screen','vocab-practice-screen','vocab-result-screen'];
+function hideAllScreens() {
+  ALL_SCREENS.forEach(id => document.getElementById(id).style.display = 'none');
+}
+function showSelect() {
+  hideAllScreens();
+  document.getElementById('select-screen').style.display = 'block';
+  updateStarDisplays();
+}
+function showPractice() {
+  hideAllScreens();
+  document.getElementById('practice-screen').style.display = 'block';
+}
+function showResult() {
+  hideAllScreens();
+  document.getElementById('result-screen').style.display = 'block';
+}
+function showShop() {
+  hideAllScreens();
+  document.getElementById('shop-screen').style.display = 'block';
+  updateStarDisplays();
+  renderShopTabs();
+  renderShopItems(currentShopCat);
+  renderInventory();
+}
+
+// === SHOP LOGIC ===
+let currentShopCat = 'school';
+
+function renderShopTabs() {
+  const container = document.getElementById('shop-tabs');
+  container.innerHTML = '';
+  SHOP_CATEGORIES.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'shop-tab' + (cat.id === currentShopCat ? ' active' : '');
+    btn.innerHTML = cat.emoji + ' ' + cat.name;
+    btn.onclick = () => { currentShopCat = cat.id; renderShopTabs(); renderShopItems(cat.id); };
+    container.appendChild(btn);
+  });
+}
+
+function renderShopItems(catId) {
+  const grid = document.getElementById('shop-grid');
+  grid.innerHTML = '';
+  const items = SHOP_ITEMS.filter(i => i.cat === catId);
+  const purchased = getPurchasedItems();
+  const stars = getTotalStars();
+
+  items.forEach(item => {
+    const owned = purchased.includes(item.id);
+    const canAfford = stars >= item.price;
+    const card = document.createElement('div');
+    card.className = 'shop-item' + (owned ? ' owned-item' : '');
+    let btnClass, btnText;
+    if (owned) { btnClass = 'owned'; btnText = '&#10003; Đã mua'; }
+    else if (canAfford) { btnClass = 'can-buy'; btnText = 'Mua ngay'; }
+    else { btnClass = 'no-afford'; btnText = 'Chưa đủ sao'; }
+
+    card.innerHTML = `
+      <div class="item-emoji">${item.emoji}</div>
+      <div class="item-name">${item.name}</div>
+      <div class="item-price">&#11088; ${item.price} sao</div>
+      <button class="buy-btn ${btnClass}" id="buy-${item.id}">${btnText}</button>
+    `;
+    if (!owned && canAfford) {
+      card.querySelector('.buy-btn').onclick = () => buyItem(item);
+    }
+    grid.appendChild(card);
+  });
+}
+
+function buyItem(item) {
+  const stars = getTotalStars();
+  if (stars < item.price) return;
+  const purchased = getPurchasedItems();
+  if (purchased.includes(item.id)) return;
+
+  setTotalStars(stars - item.price);
+  purchased.push(item.id);
+  setPurchasedItems(purchased);
+
+  // Re-render
+  renderShopItems(currentShopCat);
+  renderInventory();
+
+  // Quick animation on the bought item's card
+  const btn = document.getElementById('buy-' + item.id);
+  if (btn) {
+    btn.closest('.shop-item').classList.add('buy-success');
+  }
+}
+
+function renderInventory() {
+  const area = document.getElementById('inventory-area');
+  const purchased = getPurchasedItems();
+  if (purchased.length === 0) {
+    area.innerHTML = '<div class="empty-inventory"><span class="big-emoji">&#128230;</span>Chưa có vật phẩm nào.<br>Hãy tập gõ để kiếm sao và mua đồ nhé!</div>';
+    return;
+  }
+  let html = '<div class="inventory-grid">';
+  purchased.forEach(id => {
+    const item = SHOP_ITEMS.find(i => i.id === id);
+    if (item) {
+      html += `<div class="inv-item"><div class="item-emoji">${item.emoji}</div><div class="item-name">${item.name}</div></div>`;
+    }
+  });
+  html += '</div>';
+  area.innerHTML = html;
+}
+
+// --- Generate random sequence ---
+function generateSequence(keys, length) {
+  const seq = [];
+  for (let i = 0; i < length; i++) {
+    seq.push(keys[Math.floor(Math.random() * keys.length)]);
+  }
+  return seq;
+}
+
+// --- Render typing area ---
+function renderTypingArea() {
+  const area = document.getElementById('typing-area');
+  area.innerHTML = '';
+  sequence.forEach((ch, i) => {
+    const span = document.createElement('span');
+    span.className = 'char' + (i === pos ? ' current' : (i < pos ? '' : ' pending'));
+    span.textContent = [';',',','.','/'].includes(ch) ? ch : ch.toUpperCase();
+    span.id = 'char-' + i;
+    area.appendChild(span);
+  });
+}
+
+// --- Render keyboard ---
+function renderKeyboard(activeKey) {
+  const kb = document.getElementById('keyboard');
+  kb.innerHTML = '';
+  const lessonKeys = currentLesson ? currentLesson.keys : [];
+  const rows = [
+    { keys: TOP_ROW, offset: 20 },
+    { keys: HOME_ROW, offset: 30 },
+    { keys: BOTTOM_ROW, offset: 45 },
+  ];
+  rows.forEach(rowData => {
+    const row = document.createElement('div');
+    row.className = 'kb-row';
+    row.style.paddingLeft = rowData.offset + 'px';
+    rowData.keys.forEach(key => {
+      const k = document.createElement('div');
+      const info = FINGER_MAP[key];
+      k.className = 'kb-key ' + info.cls;
+      if (activeKey && key === activeKey) k.classList.add('active');
+      if (BUMPS.includes(key)) k.classList.add('bump');
+      if (!lessonKeys.includes(key)) k.classList.add('dimmed');
+      k.textContent = key.toUpperCase();
+      k.id = 'kb-' + key;
+      row.appendChild(k);
+    });
+    kb.appendChild(row);
+  });
+}
+
+// --- Update finger hint ---
+function updateFingerHint() {
+  const hint = document.getElementById('finger-hint');
+  if (pos >= sequence.length) {
+    hint.innerHTML = '';
+    return;
+  }
+  const ch = sequence[pos];
+  const info = FINGER_MAP[ch];
+  const display = [';',',','.','/'].includes(ch) ? ch : ch.toUpperCase();
+  hint.innerHTML = `Dùng <strong>${info.finger}</strong> để nhấn phím <strong>${display}</strong>`;
+}
+
+// --- Update stats display ---
+function updateStats() {
+  document.getElementById('stat-pos').textContent = pos;
+  document.getElementById('stat-total').textContent = sequence.length;
+  document.getElementById('stat-correct').textContent = correctCount;
+  document.getElementById('stat-wrong').textContent = wrongCount;
+}
+
+// --- Start lesson ---
+function startLesson(lesson) {
+  currentLesson = lesson;
+  sequence = generateSequence(lesson.keys, CHARS_PER_LESSON);
+  pos = 0;
+  correctCount = 0;
+  wrongCount = 0;
+  keyStats = {};
+  lesson.keys.forEach(k => {
+    keyStats[k] = { total: 0, correct: 0, wrong: 0 };
+  });
+  document.getElementById('practice-title').textContent = `Bài ${lesson.id}: ${lesson.title}`;
+  renderTypingArea();
+  renderKeyboard(sequence[0]);
+  updateFingerHint();
+  updateStats();
+  showPractice();
+  document.addEventListener('keydown', handleKeyPress);
+}
+
+// --- Handle key press ---
+function handleKeyPress(e) {
+  if (pos >= sequence.length) return;
+  const expected = sequence[pos];
+  let pressed = e.key.toLowerCase();
+  // Only react to relevant keys
+  if (!ALL_KEYS.includes(pressed)) return;
+  e.preventDefault();
+
+  const charEl = document.getElementById('char-' + pos);
+  if (!keyStats[expected]) keyStats[expected] = { total: 0, correct: 0, wrong: 0 };
+  keyStats[expected].total++;
+
+  if (pressed === expected) {
+    correctCount++;
+    keyStats[expected].correct++;
+    charEl.className = 'char correct';
+  } else {
+    wrongCount++;
+    keyStats[expected].wrong++;
+    charEl.className = 'char wrong';
+  }
+
+  pos++;
+  updateStats();
+
+  if (pos >= sequence.length) {
+    document.removeEventListener('keydown', handleKeyPress);
+    setTimeout(showResults, 400);
+    return;
+  }
+
+  // Update current char highlight
+  const nextEl = document.getElementById('char-' + pos);
+  nextEl.className = 'char current';
+  renderKeyboard(sequence[pos]);
+  updateFingerHint();
+}
+
+// --- Show results ---
+function showResults() {
+  const total = correctCount + wrongCount;
+  const pct = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+
+  document.getElementById('result-title').textContent = `Kết quả Bài ${currentLesson.id}: ${currentLesson.title}`;
+
+  const scoreEl = document.getElementById('result-score');
+  scoreEl.textContent = pct + '%';
+  scoreEl.className = 'result-score ' + (pct >= 90 ? 'score-great' : pct >= 70 ? 'score-good' : pct >= 50 ? 'score-ok' : 'score-bad');
+
+  // Stars: 80-89% = 1 star, 90-94% = 2 stars, 95-100% = 3 stars
+  const starsEl = document.getElementById('result-stars');
+  const starCount = pct >= 95 ? 3 : pct >= 90 ? 2 : pct >= 80 ? 1 : 0;
+  let starsHTML = '';
+  for (let i = 0; i < 3; i++) {
+    if (i < starCount) {
+      starsHTML += '<span class="star">&#11088;</span>';
+    } else {
+      starsHTML += '<span class="star star-empty">&#11088;</span>';
+    }
+  }
+  starsEl.innerHTML = starsHTML;
+
+  // Save stars to localStorage
+  const earnedNote = document.getElementById('stars-earned-note');
+  if (starCount > 0) {
+    setTotalStars(getTotalStars() + starCount);
+    earnedNote.innerHTML = `&#11088; +${starCount} sao! (Tổng: ${getTotalStars()} sao)`;
+    earnedNote.style.display = 'inline-block';
+  } else {
+    earnedNote.style.display = 'none';
+  }
+
+  const msgEl = document.getElementById('result-message');
+  if (pct >= 95) msgEl.textContent = 'Xuất sắc! 3 sao! Con giỏi lắm!';
+  else if (pct >= 90) msgEl.textContent = 'Tuyệt vời! 2 sao! Cố thêm chút nữa để được 3 sao nhé!';
+  else if (pct >= 80) msgEl.textContent = 'Tốt lắm! 1 sao! Hãy cố gắng lên để được nhiều sao hơn!';
+  else if (pct >= 50) msgEl.textContent = 'Cần cố gắng hơn! Tập chậm lại để đạt 80% và nhận sao nhé!';
+  else msgEl.textContent = 'Đừng nản! Hãy tập chậm rãi, đặt đúng ngón tay nhé!';
+
+  // Per-key stats table
+  const tbody = document.getElementById('key-stats-body');
+  tbody.innerHTML = '';
+  let weakest = null;
+  let weakestPct = 101;
+
+  const sortedKeys = currentLesson.keys.slice().sort((a, b) => {
+    const pa = keyStats[a] && keyStats[a].total > 0 ? (keyStats[a].correct / keyStats[a].total * 100) : 100;
+    const pb = keyStats[b] && keyStats[b].total > 0 ? (keyStats[b].correct / keyStats[b].total * 100) : 100;
+    return pa - pb;
+  });
+
+  sortedKeys.forEach(key => {
+    const s = keyStats[key] || { total: 0, correct: 0, wrong: 0 };
+    const kpct = s.total > 0 ? Math.round((s.correct / s.total) * 100) : 100;
+    if (s.total > 0 && kpct < weakestPct) { weakestPct = kpct; weakest = key; }
+    const barColor = kpct >= 90 ? '#16a34a' : kpct >= 70 ? '#2563eb' : kpct >= 50 ? '#f59e0b' : '#dc2626';
+    const isWeak = s.total > 0 && kpct < 70;
+    const tr = document.createElement('tr');
+    if (isWeak) tr.className = 'weak-key';
+    tr.innerHTML = `
+      <td class="key-cell">${key === ';' ? ';' : key.toUpperCase()}</td>
+      <td>${s.total}</td>
+      <td style="color:#16a34a;font-weight:600">${s.correct}</td>
+      <td style="color:#dc2626;font-weight:600">${s.wrong}</td>
+      <td><strong>${kpct}%</strong></td>
+      <td><div class="bar-container"><div class="bar-fill" style="width:${kpct}%;background:${barColor}"></div></div></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Advice
+  const adviceEl = document.getElementById('advice-text');
+  if (weakest && weakestPct < 80) {
+    const fi = FINGER_MAP[weakest];
+    adviceEl.innerHTML = `Phím <strong>${weakest === ';' ? ';' : weakest.toUpperCase()}</strong> (${fi.finger}) là phím con gõ yếu nhất (${weakestPct}% đúng). Lần sau hãy tập trung vào phím này, gõ chậm và chắc chắn hơn nhé!`;
+  } else if (pct < 80) {
+    adviceEl.textContent = 'Hãy thử gõ chậm hơn và tập trung nhìn vào màn hình thay vì nhìn bàn phím. Đặt tay đúng vị trí trước khi bắt đầu!';
+  } else {
+    adviceEl.textContent = 'Con đang làm rất tốt! Hãy thử tăng tốc độ gõ lên nhé, nhưng vẫn giữ chính xác cao!';
+  }
+
+  // Buttons
+  document.getElementById('btn-retry').onclick = () => startLesson(currentLesson);
+  const nextIdx = LESSONS.findIndex(l => l.id === currentLesson.id) + 1;
+  const btnNext = document.getElementById('btn-next');
+  if (nextIdx < LESSONS.length) {
+    btnNext.style.display = '';
+    btnNext.onclick = () => startLesson(LESSONS[nextIdx]);
+  } else {
+    btnNext.style.display = 'none';
+  }
+
+  // Enter key to go to next lesson
+  document.addEventListener('keydown', handleResultEnter);
+
+  showResult();
+}
+
+function handleResultEnter(e) {
+  if (e.key !== 'Enter') return;
+  document.removeEventListener('keydown', handleResultEnter);
+  const nextIdx = LESSONS.findIndex(l => l.id === currentLesson.id) + 1;
+  if (nextIdx < LESSONS.length) {
+    startLesson(LESSONS[nextIdx]);
+  } else {
+    startLesson(LESSONS[0]);
+  }
+}
+
+// ============================================
+// === VOCABULARY MODE ===
+// ============================================
+const VOCAB_UNITS = [
+  {
+    id: 7, title: 'Sports', words: [
+      { en: 'fast', vi: 'nhanh' },
+      { en: 'helmet', vi: 'mũ bảo hiểm' },
+      { en: 'jump', vi: 'nhảy' },
+      { en: 'race', vi: 'cuộc đua' },
+      { en: 'win', vi: 'chiến thắng' },
+      { en: 'control', vi: 'điều khiển' },
+      { en: 'fight', vi: 'chiến đấu' },
+      { en: 'kick', vi: 'đá' },
+      { en: 'mind', vi: 'tâm trí' },
+      { en: 'movement', vi: 'chuyển động' },
+      { en: 'competition', vi: 'cuộc thi' },
+      { en: 'ice dancer', vi: 'vũ công trượt băng' },
+    ]
+  },
+  {
+    id: 8, title: 'People and Places', words: [
+      { en: 'balcony', vi: 'ban công' },
+      { en: 'basement', vi: 'tầng hầm' },
+      { en: 'floor', vi: 'sàn nhà / tầng' },
+      { en: 'garden', vi: 'vườn' },
+      { en: 'ladder', vi: 'thang' },
+      { en: 'view', vi: 'tầm nhìn' },
+      { en: 'apartment', vi: 'căn hộ' },
+      { en: 'house', vi: 'ngôi nhà' },
+      { en: 'fasten', vi: 'buộc chặt' },
+      { en: 'float', vi: 'nổi' },
+      { en: 'relax', vi: 'thư giãn' },
+      { en: 'soap', vi: 'xà phòng' },
+      { en: 'space', vi: 'không gian' },
+      { en: 'towel', vi: 'khăn tắm' },
+    ]
+  },
+];
+
+let currentVocabUnit = null;
+let vocabWordIdx = 0;
+let vocabLetterIdx = 0;
+let vocabWordStats = []; // { en, vi, mistakes }
+
+// --- Speech ---
+function speakWord(word) {
+  if (!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(word);
+  u.lang = 'en-US';
+  u.rate = 0.85;
+  speechSynthesis.speak(u);
+}
+function speakCurrentWord() {
+  if (!currentVocabUnit) return;
+  speakWord(currentVocabUnit.words[vocabWordIdx].en);
+}
+
+// --- Vocab screens ---
+function showVocabSelect() {
+  hideAllScreens();
+  document.getElementById('vocab-select-screen').style.display = 'block';
+  renderUnitGrid();
+}
+function showVocabPractice() {
+  hideAllScreens();
+  document.getElementById('vocab-practice-screen').style.display = 'block';
+}
+function showVocabResult() {
+  hideAllScreens();
+  document.getElementById('vocab-result-screen').style.display = 'block';
+}
+
+// --- Render unit grid ---
+function renderUnitGrid() {
+  const grid = document.getElementById('unit-grid');
+  grid.innerHTML = '';
+  VOCAB_UNITS.forEach(unit => {
+    const card = document.createElement('div');
+    card.className = 'unit-card';
+    card.onclick = () => startVocabUnit(unit);
+    card.innerHTML = `
+      <div class="unit-num">U${unit.id}</div>
+      <div class="unit-title">${unit.title}</div>
+      <div class="unit-count">${unit.words.length} từ vựng</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// --- Start vocab unit ---
+function startVocabUnit(unit) {
+  currentVocabUnit = unit;
+  vocabWordIdx = 0;
+  vocabLetterIdx = 0;
+  vocabWordStats = unit.words.map(w => ({ en: w.en, vi: w.vi, mistakes: 0 }));
+  document.getElementById('vocab-unit-title').textContent = `Unit ${unit.id}: ${unit.title}`;
+  document.getElementById('vocab-total').textContent = unit.words.length;
+  showVocabPractice();
+  loadVocabWord();
+}
+
+// --- Load current word ---
+function loadVocabWord() {
+  const word = currentVocabUnit.words[vocabWordIdx];
+  vocabLetterIdx = 0;
+  document.getElementById('vocab-pos').textContent = vocabWordIdx + 1;
+  document.getElementById('word-vi').textContent = word.vi;
+
+  // Render letter boxes
+  const container = document.getElementById('letter-boxes');
+  container.innerHTML = '';
+  for (let i = 0; i < word.en.length; i++) {
+    const box = document.createElement('div');
+    box.className = 'letter-box' + (word.en[i] === ' ' ? ' space-box' : '') + (i === 0 ? ' current' : '');
+    box.id = 'lb-' + i;
+    if (word.en[i] === ' ') box.textContent = ' ';
+    container.appendChild(box);
+  }
+
+  // Render keyboard highlighting next key
+  renderVocabKeyboard(word.en[0]);
+  updateVocabFingerHint(word.en[0]);
+
+  // Speak
+  setTimeout(() => speakWord(word.en), 300);
+
+  // Listen
+  document.removeEventListener('keydown', handleVocabKeyPress);
+  document.addEventListener('keydown', handleVocabKeyPress);
+}
+
+// --- Render vocab keyboard ---
+function renderVocabKeyboard(activeKey) {
+  const kb = document.getElementById('vocab-keyboard');
+  kb.innerHTML = '';
+  const rows = [
+    { keys: TOP_ROW, offset: 20 },
+    { keys: HOME_ROW, offset: 30 },
+    { keys: BOTTOM_ROW, offset: 45 },
+  ];
+  rows.forEach(rowData => {
+    const row = document.createElement('div');
+    row.className = 'kb-row';
+    row.style.paddingLeft = rowData.offset + 'px';
+    rowData.keys.forEach(key => {
+      const k = document.createElement('div');
+      const info = FINGER_MAP[key];
+      k.className = 'kb-key ' + info.cls;
+      if (activeKey && key === activeKey.toLowerCase()) k.classList.add('active');
+      if (BUMPS.includes(key)) k.classList.add('bump');
+      k.textContent = key.toUpperCase();
+      row.appendChild(k);
+    });
+    kb.appendChild(row);
+  });
+}
+
+function updateVocabFingerHint(ch) {
+  const hint = document.getElementById('vocab-finger-hint');
+  if (!ch || ch === ' ') {
+    hint.innerHTML = 'Nhấn <strong>Space</strong> (phím cách)';
+    return;
+  }
+  const info = FINGER_MAP[ch.toLowerCase()];
+  if (info) {
+    hint.innerHTML = `Dùng <strong>${info.finger}</strong> để nhấn phím <strong>${ch.toUpperCase()}</strong>`;
+  } else {
+    hint.innerHTML = '';
+  }
+}
+
+// --- Handle vocab key press ---
+function handleVocabKeyPress(e) {
+  if (!currentVocabUnit) return;
+  const word = currentVocabUnit.words[vocabWordIdx];
+  if (vocabLetterIdx >= word.en.length) return;
+
+  const expected = word.en[vocabLetterIdx];
+  let pressed = e.key;
+
+  // Only accept letters, space
+  if (pressed.length !== 1 && pressed !== ' ') return;
+  if (pressed === ' ') e.preventDefault();
+
+  const box = document.getElementById('lb-' + vocabLetterIdx);
+
+  if (pressed.toLowerCase() === expected.toLowerCase()) {
+    // Correct
+    box.className = 'letter-box correct' + (expected === ' ' ? ' space-box' : '');
+    box.textContent = expected === ' ' ? ' ' : expected.toLowerCase();
+    vocabLetterIdx++;
+
+    if (vocabLetterIdx >= word.en.length) {
+      // Word complete!
+      document.getElementById('letter-boxes').classList.add('word-complete');
+      speakWord(word.en);
+      document.removeEventListener('keydown', handleVocabKeyPress);
+
+      setTimeout(() => {
+        vocabWordIdx++;
+        if (vocabWordIdx >= currentVocabUnit.words.length) {
+          showVocabResults();
+        } else {
+          loadVocabWord();
+        }
+      }, 1200);
+    } else {
+      // Highlight next
+      const nextBox = document.getElementById('lb-' + vocabLetterIdx);
+      if (nextBox) nextBox.classList.add('current');
+      const nextChar = word.en[vocabLetterIdx];
+      renderVocabKeyboard(nextChar === ' ' ? null : nextChar);
+      updateVocabFingerHint(nextChar);
+    }
+  } else {
+    // Wrong
+    box.classList.add('wrong');
+    vocabWordStats[vocabWordIdx].mistakes++;
+    setTimeout(() => box.classList.remove('wrong'), 400);
+  }
+}
+
+// --- Show vocab results ---
+function showVocabResults() {
+  document.removeEventListener('keydown', handleVocabKeyPress);
+
+  const totalWords = vocabWordStats.length;
+  const perfectWords = vocabWordStats.filter(w => w.mistakes === 0).length;
+  const pct = Math.round((perfectWords / totalWords) * 100);
+
+  document.getElementById('vocab-result-title').textContent = `Kết quả Unit ${currentVocabUnit.id}: ${currentVocabUnit.title}`;
+
+  const scoreEl = document.getElementById('vocab-result-score');
+  scoreEl.textContent = pct + '%';
+  scoreEl.className = 'result-score ' + (pct >= 90 ? 'score-great' : pct >= 70 ? 'score-good' : pct >= 50 ? 'score-ok' : 'score-bad');
+
+  // Stars
+  const starCount = pct >= 95 ? 3 : pct >= 90 ? 2 : pct >= 80 ? 1 : 0;
+  const starsEl = document.getElementById('vocab-result-stars');
+  let starsHTML = '';
+  for (let i = 0; i < 3; i++) {
+    starsHTML += i < starCount ? '<span class="star">&#11088;</span>' : '<span class="star star-empty">&#11088;</span>';
+  }
+  starsEl.innerHTML = starsHTML;
+
+  // Save stars
+  const earnedNote = document.getElementById('vocab-stars-earned');
+  if (starCount > 0) {
+    setTotalStars(getTotalStars() + starCount);
+    earnedNote.innerHTML = `&#11088; +${starCount} sao! (Tổng: ${getTotalStars()} sao)`;
+    earnedNote.style.display = 'inline-block';
+  } else {
+    earnedNote.style.display = 'none';
+  }
+
+  // Message
+  const msgEl = document.getElementById('vocab-result-message');
+  if (pct >= 95) msgEl.textContent = 'Xuất sắc! Con nhớ rất giỏi!';
+  else if (pct >= 80) msgEl.textContent = 'Tốt lắm! Cố gắng gõ chính xác hơn nhé!';
+  else if (pct >= 50) msgEl.textContent = 'Khá tốt! Hãy tập thêm để nhớ từ vựng!';
+  else msgEl.textContent = 'Cố gắng hơn nhé! Tập chậm rãi và nhớ từng chữ cái!';
+
+  // Word stats table
+  const tbody = document.getElementById('vocab-stats-body');
+  tbody.innerHTML = '';
+  vocabWordStats.forEach(w => {
+    const tr = document.createElement('tr');
+    const perfect = w.mistakes === 0;
+    tr.innerHTML = `
+      <td class="word-en">${w.en}</td>
+      <td class="word-vi-cell">${w.vi}</td>
+      <td class="${perfect ? 'vocab-word-perfect' : 'vocab-word-missed'}">${perfect ? '&#10004; Đúng' : '&#10008; Có lỗi'}</td>
+      <td>${w.mistakes}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Buttons
+  document.getElementById('vocab-btn-retry').onclick = () => startVocabUnit(currentVocabUnit);
+  const nextIdx = VOCAB_UNITS.findIndex(u => u.id === currentVocabUnit.id) + 1;
+  const btnNext = document.getElementById('vocab-btn-next');
+  if (nextIdx < VOCAB_UNITS.length) {
+    btnNext.style.display = '';
+    btnNext.onclick = () => startVocabUnit(VOCAB_UNITS[nextIdx]);
+  } else {
+    btnNext.style.display = 'none';
+  }
+
+  // Enter to next
+  document.addEventListener('keydown', handleVocabResultEnter);
+  showVocabResult();
+}
+
+function handleVocabResultEnter(e) {
+  if (e.key !== 'Enter') return;
+  document.removeEventListener('keydown', handleVocabResultEnter);
+  const nextIdx = VOCAB_UNITS.findIndex(u => u.id === currentVocabUnit.id) + 1;
+  if (nextIdx < VOCAB_UNITS.length) {
+    startVocabUnit(VOCAB_UNITS[nextIdx]);
+  } else {
+    showVocabSelect();
+  }
+}
+
+// --- Init ---
+renderLessons();
+updateStarDisplays();
+</script>
+</body>
+</html>

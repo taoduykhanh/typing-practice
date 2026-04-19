@@ -748,6 +748,105 @@
     border-bottom-style: dashed;
     opacity: 0.4;
   }
+
+  /* === ARTICLE MODE === */
+  .article-btn {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    padding: 10px 24px;
+    font-size: 1.05em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .article-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(22,163,74,0.4); }
+  #article-input-screen, #article-practice-screen, #article-result-screen { display: none; }
+  .article-textarea {
+    width: 100%;
+    min-height: 200px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 1.05em;
+    font-family: inherit;
+    line-height: 1.6;
+    resize: vertical;
+    margin-bottom: 16px;
+  }
+  .article-textarea:focus { outline: none; border-color: #16a34a; }
+  .sample-articles {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .sample-btn {
+    padding: 6px 14px;
+    border: 2px solid #d1d5db;
+    border-radius: 20px;
+    background: #f9fafb;
+    font-size: 0.9em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .sample-btn:hover { border-color: #16a34a; color: #16a34a; }
+
+  .article-stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 16px;
+    font-size: 1.05em;
+    font-weight: 600;
+    flex-wrap: wrap;
+  }
+  .article-stat {
+    background: #f3f4f6;
+    border-radius: 20px;
+    padding: 8px 16px;
+  }
+  .article-stat.time { background: #dbeafe; color: #1e40af; }
+  .article-stat.correct { background: #dcfce7; color: #15803d; }
+  .article-stat.wrong { background: #fee2e2; color: #991b1b; }
+  .article-stat.wpm { background: #fef3c7; color: #92400e; }
+
+  .article-text {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+    font-size: 1.4em;
+    font-family: 'Consolas', 'Courier New', monospace;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .article-text .a-char {
+    position: relative;
+    transition: background 0.1s;
+  }
+  .article-text .a-char.a-current {
+    background: #ddd6fe;
+    border-radius: 3px;
+    box-shadow: 0 0 0 2px #7c3aed;
+  }
+  .article-text .a-char.a-correct { color: #16a34a; }
+  .article-text .a-char.a-wrong {
+    color: #dc2626;
+    background: #fee2e2;
+    border-radius: 3px;
+    text-decoration: underline wavy #dc2626;
+  }
+  .article-text .a-char.a-pending { color: #94a3b8; }
 </style>
 </head>
 <body>
@@ -760,6 +859,7 @@
       <div class="star-wallet">&#11088; <span id="star-count">0</span> sao</div>
       <button class="vocab-btn" onclick="showVocabSelect()">&#128214; Từ vựng</button>
       <button class="grammar-btn" onclick="showGrammarSelect()">&#128221; Ngữ pháp</button>
+      <button class="article-btn" onclick="showArticleInput()">&#128196; Gõ bài văn</button>
       <button class="shop-btn" onclick="showShop()">&#128722; Cửa hàng</button>
     </div>
     <div class="lesson-grid" id="lesson-grid"></div>
@@ -777,6 +877,55 @@
     <hr style="border:none;border-top:2px solid #e5e7eb;margin:24px 0;">
     <h2 style="color:#4a3f8a;margin-bottom:8px;">&#127890; Tủ đồ của con</h2>
     <div id="inventory-area"></div>
+  </div>
+
+  <!-- ARTICLE INPUT SCREEN -->
+  <div id="article-input-screen">
+    <button class="back-btn" onclick="showSelect()">&larr; Quay lại</button>
+    <h1>&#128196; Gõ Bài Văn</h1>
+    <p class="subtitle">Dán đoạn văn, bài báo vào và bắt đầu luyện gõ tốc độ!</p>
+    <div class="sample-articles" id="sample-articles"></div>
+    <textarea class="article-textarea" id="article-textarea" placeholder="Dán đoạn văn tiếng Việt hoặc tiếng Anh vào đây (khoảng 150-200 từ)..."></textarea>
+    <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
+      <button class="btn btn-success" onclick="startArticle()">&#9654;&#65039; Bắt đầu gõ</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('article-textarea').value=''">Xóa</button>
+    </div>
+  </div>
+
+  <!-- ARTICLE PRACTICE SCREEN -->
+  <div id="article-practice-screen">
+    <button class="back-btn" onclick="quitArticle()">&larr; Dừng bài</button>
+    <h2 style="text-align:center;color:#15803d;margin-bottom:12px;">&#128196; Đang gõ bài văn</h2>
+    <div class="article-stats-bar">
+      <div class="article-stat time">&#9201;&#65039; <span id="a-time">0:00</span></div>
+      <div class="article-stat"><span id="a-progress">0</span> / <span id="a-total">0</span> ký tự</div>
+      <div class="article-stat correct">&#10003; <span id="a-correct">0</span></div>
+      <div class="article-stat wrong">&#10008; <span id="a-wrong">0</span></div>
+      <div class="article-stat wpm">&#9889; <span id="a-wpm">0</span> từ/phút</div>
+    </div>
+    <div class="article-text" id="article-text"></div>
+  </div>
+
+  <!-- ARTICLE RESULT SCREEN -->
+  <div id="article-result-screen">
+    <button class="back-btn" onclick="showArticleInput()">&larr; Gõ bài khác</button>
+    <div class="result-box">
+      <h2>&#127881; Kết quả gõ bài văn</h2>
+      <div class="result-score" id="a-result-score"></div>
+      <div class="result-message" id="a-result-message"></div>
+      <div class="stars-earned-note" id="a-stars-earned" style="display:none;"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px;">
+      <div class="article-stat time" style="text-align:center;padding:16px;"><div style="font-size:0.85em;">Thời gian</div><div style="font-size:1.6em;font-weight:800;" id="a-result-time">0:00</div></div>
+      <div class="article-stat correct" style="text-align:center;padding:16px;"><div style="font-size:0.85em;">Gõ đúng</div><div style="font-size:1.6em;font-weight:800;" id="a-result-correct">0</div></div>
+      <div class="article-stat wrong" style="text-align:center;padding:16px;"><div style="font-size:0.85em;">Gõ sai</div><div style="font-size:1.6em;font-weight:800;" id="a-result-wrong">0</div></div>
+      <div class="article-stat wpm" style="text-align:center;padding:16px;"><div style="font-size:0.85em;">Tốc độ</div><div style="font-size:1.6em;font-weight:800;"><span id="a-result-wpm">0</span> WPM</div></div>
+    </div>
+    <div class="result-buttons">
+      <button class="btn btn-primary" onclick="startArticle()">Gõ lại bài này</button>
+      <button class="btn btn-success" onclick="showArticleInput()">Gõ bài khác</button>
+      <button class="btn btn-secondary" onclick="showSelect()">Về trang chủ</button>
+    </div>
   </div>
 
   <!-- GRAMMAR SELECT SCREEN -->
@@ -1094,7 +1243,7 @@ function updateStarDisplays() {
 }
 
 // --- Screen switching ---
-const ALL_SCREENS = ['select-screen','practice-screen','result-screen','shop-screen','vocab-select-screen','vocab-practice-screen','vocab-result-screen','grammar-select-screen','grammar-practice-screen','grammar-result-screen'];
+const ALL_SCREENS = ['select-screen','practice-screen','result-screen','shop-screen','vocab-select-screen','vocab-practice-screen','vocab-result-screen','grammar-select-screen','grammar-practice-screen','grammar-result-screen','article-input-screen','article-practice-screen','article-result-screen'];
 function hideAllScreens() {
   ALL_SCREENS.forEach(id => document.getElementById(id).style.display = 'none');
 }
@@ -2139,6 +2288,214 @@ function handleGrammarResultEnter(e) {
   } else {
     showGrammarSelect();
   }
+}
+
+// ============================================
+// === ARTICLE MODE ===
+// ============================================
+const SAMPLE_ARTICLES = [
+  {
+    title: 'Chú mèo con',
+    text: 'Nhà em có một chú mèo con rất dễ thương. Bộ lông của nó mượt mà, màu vàng óng như ánh nắng ban mai. Đôi mắt tròn xoe, xanh biếc như hai viên ngọc. Mỗi sáng, chú mèo thường chạy ra sân, nằm dài dưới nắng ấm, duỗi chân và kêu meo meo. Em rất yêu quý chú mèo của mình. Mỗi khi đi học về, em đều ôm chú vào lòng và vuốt ve. Chú mèo giỏi bắt chuột nên mẹ em rất thích. Em hứa sẽ chăm sóc chú thật tốt, cho chú ăn đủ bữa và chơi với chú mỗi ngày. Có chú mèo, ngôi nhà của em vui hơn rất nhiều.'
+  },
+  {
+    title: 'My hobby',
+    text: 'My favorite hobby is reading books. Every evening after dinner, I sit in my quiet room and open a new book. I love adventure stories the most because they take me to magical places. When I read, I can meet brave heroes, explore dark forests, and sail across wide oceans. Books help me learn new words and understand the world better. My parents often take me to the library on weekends. There, I can borrow many interesting books for free. I also like sharing stories with my friends at school. Reading makes me happy and teaches me to be kind and smart. I will keep reading books every day to become a better person.'
+  },
+  {
+    title: 'Mùa hè của em',
+    text: 'Mùa hè là mùa em yêu thích nhất trong năm. Khi những cánh phượng đỏ rực nở trên sân trường, em biết kỳ nghỉ sắp đến. Trong mùa hè, em được về quê thăm ông bà ngoại. Ở quê, không khí trong lành, buổi sáng em cùng ông đi dạo trên cánh đồng xanh mướt. Buổi chiều, em cùng các bạn trong xóm thả diều trên đê. Những cánh diều đủ màu sắc bay cao trên bầu trời xanh thẳm. Buổi tối, cả nhà quây quần bên mâm cơm, bà kể cho em nghe những câu chuyện cổ tích. Em cảm thấy rất hạnh phúc và yên bình. Mùa hè ở quê là khoảng thời gian đáng nhớ nhất của tuổi thơ em.'
+  },
+];
+
+let articleText = '';
+let articlePos = 0;
+let articleCorrect = 0;
+let articleWrong = 0;
+let articleStartTime = 0;
+let articleTimerInterval = null;
+let articleMistakenPositions = new Set();
+
+function showArticleInput() {
+  hideAllScreens();
+  document.getElementById('article-input-screen').style.display = 'block';
+  renderSampleArticles();
+}
+function showArticlePractice() {
+  hideAllScreens();
+  document.getElementById('article-practice-screen').style.display = 'block';
+}
+function showArticleResult() {
+  hideAllScreens();
+  document.getElementById('article-result-screen').style.display = 'block';
+}
+
+function renderSampleArticles() {
+  const container = document.getElementById('sample-articles');
+  container.innerHTML = '<span style="color:#6b7280;font-weight:600;margin-right:4px;align-self:center;">Hoặc chọn mẫu:</span>';
+  SAMPLE_ARTICLES.forEach(a => {
+    const btn = document.createElement('button');
+    btn.className = 'sample-btn';
+    btn.textContent = a.title;
+    btn.onclick = () => { document.getElementById('article-textarea').value = a.text; };
+    container.appendChild(btn);
+  });
+}
+
+function startArticle() {
+  const text = (document.getElementById('article-textarea').value || articleText).trim();
+  if (!text) { alert('Hãy dán đoạn văn vào trước nhé!'); return; }
+  articleText = text;
+  articlePos = 0;
+  articleCorrect = 0;
+  articleWrong = 0;
+  articleMistakenPositions = new Set();
+  articleStartTime = Date.now();
+
+  document.getElementById('a-total').textContent = articleText.length;
+  document.getElementById('a-progress').textContent = '0';
+  document.getElementById('a-correct').textContent = '0';
+  document.getElementById('a-wrong').textContent = '0';
+  document.getElementById('a-time').textContent = '0:00';
+  document.getElementById('a-wpm').textContent = '0';
+
+  renderArticleText();
+  showArticlePractice();
+
+  // Timer
+  if (articleTimerInterval) clearInterval(articleTimerInterval);
+  articleTimerInterval = setInterval(updateArticleTimer, 500);
+
+  document.removeEventListener('keydown', handleArticleKeyPress);
+  document.addEventListener('keydown', handleArticleKeyPress);
+}
+
+function renderArticleText() {
+  const container = document.getElementById('article-text');
+  container.innerHTML = '';
+  for (let i = 0; i < articleText.length; i++) {
+    const span = document.createElement('span');
+    span.className = 'a-char ' + (i === articlePos ? 'a-current' : (i < articlePos ? 'a-correct' : 'a-pending'));
+    if (articleMistakenPositions.has(i) && i < articlePos) span.className = 'a-char a-wrong';
+    const ch = articleText[i];
+    span.textContent = ch === '\n' ? '↵\n' : ch;
+    span.id = 'a-char-' + i;
+    container.appendChild(span);
+  }
+  // Scroll current char into view
+  const cur = document.getElementById('a-char-' + articlePos);
+  if (cur) cur.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function updateArticleTimer() {
+  const elapsed = Math.floor((Date.now() - articleStartTime) / 1000);
+  const m = Math.floor(elapsed / 60);
+  const s = elapsed % 60;
+  document.getElementById('a-time').textContent = `${m}:${s.toString().padStart(2, '0')}`;
+  // WPM: standard = 5 chars per word
+  const minutes = elapsed / 60;
+  const wpm = minutes > 0 ? Math.round((articleCorrect / 5) / minutes) : 0;
+  document.getElementById('a-wpm').textContent = wpm;
+}
+
+function handleArticleKeyPress(e) {
+  if (articlePos >= articleText.length) return;
+  const expected = articleText[articlePos];
+  let pressed = e.key;
+
+  // Handle Enter as newline
+  if (pressed === 'Enter' && expected === '\n') {
+    e.preventDefault();
+  } else if (pressed.length !== 1) {
+    return;
+  }
+
+  if (pressed === ' ' || pressed === 'Tab') e.preventDefault();
+
+  const charEl = document.getElementById('a-char-' + articlePos);
+  if (!charEl) return;
+
+  const matches = (pressed === expected) || (pressed === 'Enter' && expected === '\n');
+  if (matches) {
+    if (articleMistakenPositions.has(articlePos)) {
+      charEl.className = 'a-char a-wrong';
+    } else {
+      charEl.className = 'a-char a-correct';
+      articleCorrect++;
+    }
+    articlePos++;
+    document.getElementById('a-correct').textContent = articleCorrect;
+    document.getElementById('a-progress').textContent = articlePos;
+
+    if (articlePos >= articleText.length) {
+      finishArticle();
+      return;
+    }
+    const nextEl = document.getElementById('a-char-' + articlePos);
+    if (nextEl) {
+      nextEl.classList.add('a-current');
+      nextEl.classList.remove('a-pending');
+      nextEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  } else {
+    articleWrong++;
+    articleMistakenPositions.add(articlePos);
+    charEl.classList.add('a-wrong');
+    document.getElementById('a-wrong').textContent = articleWrong;
+  }
+}
+
+function finishArticle() {
+  clearInterval(articleTimerInterval);
+  document.removeEventListener('keydown', handleArticleKeyPress);
+
+  const elapsed = Math.max(1, Math.floor((Date.now() - articleStartTime) / 1000));
+  const m = Math.floor(elapsed / 60);
+  const s = elapsed % 60;
+  const timeStr = `${m}:${s.toString().padStart(2, '0')}`;
+  const minutes = elapsed / 60;
+  const wpm = Math.round((articleCorrect / 5) / minutes);
+  const total = articleCorrect + articleWrong;
+  const accuracy = total > 0 ? Math.round((articleCorrect / total) * 100) : 0;
+
+  document.getElementById('a-result-time').textContent = timeStr;
+  document.getElementById('a-result-correct').textContent = articleCorrect;
+  document.getElementById('a-result-wrong').textContent = articleWrong;
+  document.getElementById('a-result-wpm').textContent = wpm;
+
+  const scoreEl = document.getElementById('a-result-score');
+  scoreEl.textContent = accuracy + '%';
+  scoreEl.className = 'result-score ' + (accuracy >= 95 ? 'score-great' : accuracy >= 85 ? 'score-good' : accuracy >= 70 ? 'score-ok' : 'score-bad');
+
+  const msgEl = document.getElementById('a-result-message');
+  let stars = 0;
+  if (accuracy >= 95 && wpm >= 30) { stars = 5; msgEl.textContent = 'Tuyệt vời! Con gõ nhanh và chính xác!'; }
+  else if (accuracy >= 95) { stars = 4; msgEl.textContent = 'Rất chính xác! Hãy cố tăng tốc độ nhé!'; }
+  else if (accuracy >= 85) { stars = 3; msgEl.textContent = 'Khá tốt! Cố gắng gõ chính xác hơn!'; }
+  else if (accuracy >= 70) { stars = 2; msgEl.textContent = 'Tốt! Gõ chậm lại và chú ý hơn nhé!'; }
+  else if (accuracy >= 50) { stars = 1; msgEl.textContent = 'Cần luyện thêm! Gõ chậm và chắc chắn!'; }
+  else { stars = 0; msgEl.textContent = 'Đừng nản, hãy tập gõ cơ bản trước nhé!'; }
+
+  // Bonus: + stars based on length
+  const lengthBonus = Math.floor(articleText.length / 200);
+  stars += lengthBonus;
+
+  const earnedNote = document.getElementById('a-stars-earned');
+  if (stars > 0) {
+    setTotalStars(getTotalStars() + stars);
+    earnedNote.innerHTML = `&#11088; +${stars} sao! (Tổng: ${getTotalStars()} sao)`;
+    earnedNote.style.display = 'inline-block';
+  } else {
+    earnedNote.style.display = 'none';
+  }
+
+  showArticleResult();
+}
+
+function quitArticle() {
+  clearInterval(articleTimerInterval);
+  document.removeEventListener('keydown', handleArticleKeyPress);
+  showArticleInput();
 }
 
 // --- Init ---

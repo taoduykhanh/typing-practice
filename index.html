@@ -904,6 +904,8 @@
       <div class="article-stat wpm">&#9889; <span id="a-wpm">0</span> từ/phút</div>
     </div>
     <div class="article-text" id="article-text"></div>
+    <textarea id="article-hidden-input" style="position:absolute;left:-9999px;opacity:0;" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+    <p style="text-align:center;color:#6b7280;font-size:0.9em;margin-top:8px;">Nếu không gõ được, hãy <a href="#" onclick="document.getElementById('article-hidden-input').focus();return false;" style="color:#16a34a;font-weight:600;">bấm vào đây</a> để kích hoạt ô nhập</p>
   </div>
 
   <!-- ARTICLE RESULT SCREEN -->
@@ -2309,6 +2311,8 @@ const SAMPLE_ARTICLES = [
 ];
 
 let articleText = '';
+let articleGraphemes = [];
+let articleTypedLen = 0;
 let articlePos = 0;
 let articleCorrect = 0;
 let articleWrong = 0;
@@ -2350,9 +2354,14 @@ function startArticle() {
   articleCorrect = 0;
   articleWrong = 0;
   articleMistakenPositions = new Set();
+  articleTypedLen = 0;
   articleStartTime = Date.now();
 
-  document.getElementById('a-total').textContent = articleText.length;
+  // Normalize article text to NFC so composed Vietnamese chars match
+  articleText = articleText.normalize('NFC');
+  articleGraphemes = toGraphemes(articleText);
+
+  document.getElementById('a-total').textContent = articleGraphemes.length;
   document.getElementById('a-progress').textContent = '0';
   document.getElementById('a-correct').textContent = '0';
   document.getElementById('a-wrong').textContent = '0';
@@ -2366,18 +2375,33 @@ function startArticle() {
   if (articleTimerInterval) clearInterval(articleTimerInterval);
   articleTimerInterval = setInterval(updateArticleTimer, 500);
 
-  document.removeEventListener('keydown', handleArticleKeyPress);
-  document.addEventListener('keydown', handleArticleKeyPress);
+  // Use hidden textarea + input event to support Vietnamese IME composition
+  const hidden = document.getElementById('article-hidden-input');
+  hidden.value = '';
+  hidden.removeEventListener('input', handleArticleInput);
+  hidden.removeEventListener('keydown', handleArticleKeydown);
+  hidden.addEventListener('input', handleArticleInput);
+  hidden.addEventListener('keydown', handleArticleKeydown);
+  setTimeout(() => hidden.focus(), 100);
+}
+
+function handleArticleKeydown(e) {
+  // Handle Enter manually since textarea also handles it
+  if (e.key === 'Enter' && articlePos < articleText.length && articleText[articlePos] === '\n') {
+    // Let input event handle it via newline in textarea value
+  }
+  // Prevent scrolling on space at page level
+  if (e.key === ' ') e.stopPropagation();
 }
 
 function renderArticleText() {
   const container = document.getElementById('article-text');
   container.innerHTML = '';
-  for (let i = 0; i < articleText.length; i++) {
+  for (let i = 0; i < articleGraphemes.length; i++) {
     const span = document.createElement('span');
     span.className = 'a-char ' + (i === articlePos ? 'a-current' : (i < articlePos ? 'a-correct' : 'a-pending'));
     if (articleMistakenPositions.has(i) && i < articlePos) span.className = 'a-char a-wrong';
-    const ch = articleText[i];
+    const ch = articleGraphemes[i];
     span.textContent = ch === '\n' ? '↵\n' : ch;
     span.id = 'a-char-' + i;
     container.appendChild(span);
@@ -2398,56 +2422,67 @@ function updateArticleTimer() {
   document.getElementById('a-wpm').textContent = wpm;
 }
 
-function handleArticleKeyPress(e) {
-  if (articlePos >= articleText.length) return;
-  const expected = articleText[articlePos];
-  let pressed = e.key;
-
-  // Handle Enter as newline
-  if (pressed === 'Enter' && expected === '\n') {
-    e.preventDefault();
-  } else if (pressed.length !== 1) {
-    return;
+// Use Intl.Segmenter to iterate user-perceived characters (graphemes)
+function toGraphemes(str) {
+  if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+    const seg = new Intl.Segmenter('vi', { granularity: 'grapheme' });
+    return Array.from(seg.segment(str), s => s.segment);
   }
+  return Array.from(str);
+}
 
-  if (pressed === ' ' || pressed === 'Tab') e.preventDefault();
+function handleArticleInput(e) {
+  if (articlePos >= articleGraphemes.length) return;
 
-  const charEl = document.getElementById('a-char-' + articlePos);
-  if (!charEl) return;
+  const hidden = document.getElementById('article-hidden-input');
+  const typed = toGraphemes(hidden.value.normalize('NFC'));
 
-  const matches = (pressed === expected) || (pressed === 'Enter' && expected === '\n');
-  if (matches) {
-    if (articleMistakenPositions.has(articlePos)) {
-      charEl.className = 'a-char a-wrong';
+  // Process new graphemes since last time
+  while (articleTypedLen < typed.length && articlePos < articleGraphemes.length) {
+    const pressed = typed[articleTypedLen];
+    const expected = articleGraphemes[articlePos];
+    articleTypedLen++;
+
+    const charEl = document.getElementById('a-char-' + articlePos);
+    if (!charEl) break;
+
+    if (pressed === expected) {
+      if (articleMistakenPositions.has(articlePos)) {
+        charEl.className = 'a-char a-wrong';
+      } else {
+        charEl.className = 'a-char a-correct';
+        articleCorrect++;
+      }
+      articlePos++;
+      document.getElementById('a-correct').textContent = articleCorrect;
+      document.getElementById('a-progress').textContent = articlePos;
+
+      if (articlePos >= articleGraphemes.length) {
+        finishArticle();
+        return;
+      }
+      const nextEl = document.getElementById('a-char-' + articlePos);
+      if (nextEl) {
+        nextEl.classList.add('a-current');
+        nextEl.classList.remove('a-pending');
+        nextEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
     } else {
-      charEl.className = 'a-char a-correct';
-      articleCorrect++;
+      articleWrong++;
+      articleMistakenPositions.add(articlePos);
+      charEl.classList.add('a-wrong');
+      document.getElementById('a-wrong').textContent = articleWrong;
+      // Don't advance position - user must type correct char
     }
-    articlePos++;
-    document.getElementById('a-correct').textContent = articleCorrect;
-    document.getElementById('a-progress').textContent = articlePos;
-
-    if (articlePos >= articleText.length) {
-      finishArticle();
-      return;
-    }
-    const nextEl = document.getElementById('a-char-' + articlePos);
-    if (nextEl) {
-      nextEl.classList.add('a-current');
-      nextEl.classList.remove('a-pending');
-      nextEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    }
-  } else {
-    articleWrong++;
-    articleMistakenPositions.add(articlePos);
-    charEl.classList.add('a-wrong');
-    document.getElementById('a-wrong').textContent = articleWrong;
   }
 }
 
 function finishArticle() {
   clearInterval(articleTimerInterval);
-  document.removeEventListener('keydown', handleArticleKeyPress);
+  const hidden = document.getElementById('article-hidden-input');
+  hidden.removeEventListener('input', handleArticleInput);
+  hidden.removeEventListener('keydown', handleArticleKeydown);
+  hidden.blur();
 
   const elapsed = Math.max(1, Math.floor((Date.now() - articleStartTime) / 1000));
   const m = Math.floor(elapsed / 60);
@@ -2494,7 +2529,10 @@ function finishArticle() {
 
 function quitArticle() {
   clearInterval(articleTimerInterval);
-  document.removeEventListener('keydown', handleArticleKeyPress);
+  const hidden = document.getElementById('article-hidden-input');
+  hidden.removeEventListener('input', handleArticleInput);
+  hidden.removeEventListener('keydown', handleArticleKeydown);
+  hidden.blur();
   showArticleInput();
 }
 

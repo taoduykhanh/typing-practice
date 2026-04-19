@@ -2431,49 +2431,80 @@ function toGraphemes(str) {
   return Array.from(str);
 }
 
-function handleArticleInput(e) {
-  if (articlePos >= articleGraphemes.length) return;
+let articleWrongPendingTimer = null;
+let articleLastWrongPos = -1;
 
+function handleArticleInput(e) {
   const hidden = document.getElementById('article-hidden-input');
   const typed = toGraphemes(hidden.value.normalize('NFC'));
 
-  // Process new graphemes since last time
-  while (articleTypedLen < typed.length && articlePos < articleGraphemes.length) {
-    const pressed = typed[articleTypedLen];
-    const expected = articleGraphemes[articlePos];
-    articleTypedLen++;
+  // Replay from scratch: compare typed graphemes against expected
+  let newPos = 0;
+  let newCorrect = 0;
+  let firstWrongPos = -1;
 
-    const charEl = document.getElementById('a-char-' + articlePos);
-    if (!charEl) break;
+  // Walk through typed chars
+  for (let i = 0; i < typed.length && newPos < articleGraphemes.length; i++) {
+    const pressed = typed[i];
+    const expected = articleGraphemes[newPos];
 
     if (pressed === expected) {
-      if (articleMistakenPositions.has(articlePos)) {
-        charEl.className = 'a-char a-wrong';
-      } else {
-        charEl.className = 'a-char a-correct';
-        articleCorrect++;
-      }
-      articlePos++;
-      document.getElementById('a-correct').textContent = articleCorrect;
-      document.getElementById('a-progress').textContent = articlePos;
-
-      if (articlePos >= articleGraphemes.length) {
-        finishArticle();
-        return;
-      }
-      const nextEl = document.getElementById('a-char-' + articlePos);
-      if (nextEl) {
-        nextEl.classList.add('a-current');
-        nextEl.classList.remove('a-pending');
-        nextEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
-      }
+      newCorrect++;
+      newPos++;
     } else {
-      articleWrong++;
-      articleMistakenPositions.add(articlePos);
-      charEl.classList.add('a-wrong');
-      document.getElementById('a-wrong').textContent = articleWrong;
-      // Don't advance position - user must type correct char
+      firstWrongPos = newPos;
+      break; // stop - user must fix before continuing
     }
+  }
+
+  // Update visual state
+  for (let i = 0; i < articleGraphemes.length; i++) {
+    const el = document.getElementById('a-char-' + i);
+    if (!el) continue;
+    el.classList.remove('a-current', 'a-correct', 'a-wrong', 'a-pending');
+    if (i < newPos) {
+      if (articleMistakenPositions.has(i)) el.classList.add('a-wrong');
+      else el.classList.add('a-correct');
+    } else if (i === newPos) {
+      if (firstWrongPos === newPos) el.classList.add('a-wrong', 'a-current');
+      else el.classList.add('a-current');
+    } else {
+      el.classList.add('a-pending');
+    }
+  }
+
+  articlePos = newPos;
+  articleCorrect = newCorrect;
+  document.getElementById('a-correct').textContent = articleCorrect;
+  document.getElementById('a-progress').textContent = articlePos;
+
+  // Scroll to current
+  const curEl = document.getElementById('a-char-' + articlePos);
+  if (curEl) curEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+
+  // Delay wrong counting 250ms - gives Telex IME time to compose (a+f → à)
+  if (articleWrongPendingTimer) {
+    clearTimeout(articleWrongPendingTimer);
+    articleWrongPendingTimer = null;
+  }
+  if (firstWrongPos >= 0) {
+    articleLastWrongPos = firstWrongPos;
+    articleWrongPendingTimer = setTimeout(() => {
+      // Re-check: is this position still wrong?
+      const currentTyped = toGraphemes(hidden.value.normalize('NFC'));
+      if (currentTyped.length > firstWrongPos && currentTyped[firstWrongPos] !== articleGraphemes[firstWrongPos]) {
+        if (!articleMistakenPositions.has(firstWrongPos)) {
+          articleMistakenPositions.add(firstWrongPos);
+          articleWrong++;
+          document.getElementById('a-wrong').textContent = articleWrong;
+        }
+      }
+      articleWrongPendingTimer = null;
+    }, 250);
+  }
+
+  if (articlePos >= articleGraphemes.length) {
+    finishArticle();
   }
 }
 

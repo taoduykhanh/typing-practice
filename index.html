@@ -1823,6 +1823,8 @@ function renderLessons() {
 // === SHOP DATA ===
 const SHOP_CATEGORIES = [
   { id: 'school', name: 'Đồ dùng học tập', emoji: '&#9999;&#65039;' },
+  { id: 'toy', name: 'Đồ chơi', emoji: '&#129528;' },
+  { id: 'makeup', name: 'Đồ trang điểm', emoji: '&#128132;' },
   { id: 'manga', name: 'Truyện tranh', emoji: '&#128218;' },
   { id: 'electronics', name: 'Đồ điện tử', emoji: '&#128241;' },
   { id: 'fun', name: 'Giải trí', emoji: '&#127918;' },
@@ -1844,6 +1846,22 @@ const SHOP_ITEMS = [
   { id: 'puzzle', name: 'Xếp hình', emoji: '&#129513;', price: 5, cat: 'fun' },
   { id: 'teddy', name: 'Gấu bông', emoji: '&#129528;', price: 8, cat: 'fun' },
   { id: 'robot', name: 'Robot đồ chơi', emoji: '&#129302;', price: 14, cat: 'fun' },
+  // Đồ chơi
+  { id: 'balloon', name: 'Bóng bay', emoji: '&#127880;', price: 2, cat: 'toy' },
+  { id: 'yoyo', name: 'Yo-yo', emoji: '&#129664;', price: 3, cat: 'toy' },
+  { id: 'ball', name: 'Quả bóng', emoji: '&#9917;', price: 4, cat: 'toy' },
+  { id: 'kite', name: 'Diều giấy', emoji: '&#129665;', price: 5, cat: 'toy' },
+  { id: 'doll', name: 'Búp bê', emoji: '&#127886;', price: 8, cat: 'toy' },
+  { id: 'toycar', name: 'Ô tô đồ chơi', emoji: '&#128663;', price: 9, cat: 'toy' },
+  { id: 'lego', name: 'Khối xếp hình LEGO', emoji: '&#129521;', price: 12, cat: 'toy' },
+  // Đồ trang điểm
+  { id: 'hairbow', name: 'Nơ cài tóc', emoji: '&#127872;', price: 3, cat: 'makeup' },
+  { id: 'mirror', name: 'Gương soi', emoji: '&#129694;', price: 4, cat: 'makeup' },
+  { id: 'nailpolish', name: 'Sơn móng tay', emoji: '&#128133;', price: 5, cat: 'makeup' },
+  { id: 'lipstick', name: 'Son môi', emoji: '&#128132;', price: 6, cat: 'makeup' },
+  { id: 'necklace', name: 'Vòng cổ xinh', emoji: '&#128255;', price: 8, cat: 'makeup' },
+  { id: 'ring', name: 'Nhẫn xinh', emoji: '&#128141;', price: 10, cat: 'makeup' },
+  { id: 'crown', name: 'Vương miện công chúa', emoji: '&#128081;', price: 15, cat: 'makeup' },
 ];
 
 // === LOCAL STORAGE ===

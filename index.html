@@ -1054,6 +1054,143 @@
     80% { opacity: 1; }
     100% { opacity: 0; }
   }
+
+  /* === GAMES HUB (ARCADE) === */
+  #games-hub-screen { display: none; }
+  .games-hub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .hub-card {
+    position: relative;
+    border-radius: 18px;
+    padding: 22px 18px 22px 22px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    color: #fff;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .hub-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,0.22); }
+  .hub-card .hub-emoji { font-size: 3em; line-height: 1; flex-shrink: 0; }
+  .hub-card .hub-name { font-weight: 800; font-size: 1.25em; margin-bottom: 4px; }
+  .hub-card .hub-desc { font-size: 0.9em; opacity: 0.95; line-height: 1.35; }
+  .hub-card .hub-high { font-size: 0.82em; opacity: 0.92; margin-top: 6px; font-weight: 700; }
+  .hub-card.locked { filter: grayscale(0.6) brightness(0.95); cursor: default; }
+  .hub-card.locked:hover { transform: none; box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+  .hub-card .hub-soon {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(255,255,255,0.85); color: #374151;
+    font-size: 0.72em; font-weight: 700;
+    padding: 3px 8px; border-radius: 10px;
+  }
+
+  /* === RACE (Đua thú gõ chữ) === */
+  .race-track {
+    background: linear-gradient(180deg, #f0fdf4, #dcfce7);
+    border: 3px solid #86efac;
+    border-radius: 16px;
+    padding: 6px 0;
+    margin-bottom: 18px;
+  }
+  .race-lane {
+    position: relative;
+    height: 62px;
+    margin: 6px 0;
+    border-bottom: 3px dashed #86efac;
+  }
+  .race-lane:last-child { border-bottom: none; }
+  .race-label {
+    position: absolute; top: 3px; left: 12px;
+    font-size: 0.8em; font-weight: 700; color: #15803d; z-index: 2;
+  }
+  .race-runner {
+    position: absolute; bottom: 6px; left: 0%;
+    font-size: 2.1em;
+    transition: left 0.35s ease-out;
+    z-index: 1;
+  }
+  .race-runner.hop { animation: raceHop 0.35s; }
+  @keyframes raceHop { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+  .race-finish {
+    position: absolute; right: 8px; bottom: 8px;
+    font-size: 1.7em; opacity: 0.85;
+  }
+  .race-word-zone { text-align: center; }
+
+  /* === WHACK-A-MOLE (Đập chuột chũi) === */
+  .whack-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    max-width: 420px;
+    margin: 0 auto 14px;
+  }
+  .whack-hole {
+    position: relative;
+    height: 110px;
+    background: radial-gradient(ellipse at 50% 95%, #a87544 0%, #7a5230 45%, #5b3a1a 100%);
+    border-radius: 50% 50% 45% 45% / 40% 40% 60% 60%;
+    overflow: hidden;
+    box-shadow: inset 0 -8px 14px rgba(0,0,0,0.45);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .whack-mole {
+    transform: translateY(115%);
+    transition: transform 0.16s ease-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+    padding-bottom: 4px;
+  }
+  .whack-hole.up .whack-mole { transform: translateY(6%); }
+  .whack-mole .mole-face { font-size: 2.1em; line-height: 1; }
+  .whack-mole .mole-letter {
+    margin-top: -4px;
+    font-weight: 800;
+    font-size: 1.25em;
+    font-family: 'Consolas', monospace;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 8px;
+    padding: 0 8px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  .whack-hole.bonk { animation: whackBonk 0.25s; }
+  @keyframes whackBonk { 0% { transform: scale(1); } 50% { transform: scale(0.9); } 100% { transform: scale(1); } }
+
+  /* === KEY HUNT (Truy tìm phím) === */
+  .kh-target-zone { text-align: center; margin: 14px 0 18px; }
+  .kh-target {
+    width: 92px; height: 92px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3em;
+    font-weight: 800;
+    font-family: 'Consolas', monospace;
+    border-width: 4px;
+    border-style: solid;
+    text-transform: uppercase;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    animation: pulse 0.8s ease-in-out infinite alternate;
+  }
+  .kb-key.kh-wrong {
+    background: #fee2e2 !important;
+    border-color: #dc2626 !important;
+    color: #dc2626 !important;
+    animation: shake 0.25s;
+  }
 </style>
 </head>
 <body>
@@ -1064,7 +1201,7 @@
     <p class="subtitle">Chọn bài tập để bắt đầu luyện gõ!</p>
     <div class="star-balance">
       <div class="star-wallet">&#11088; <span id="star-count">0</span> sao</div>
-      <button class="game-btn" onclick="showGameSelect()">&#127918; Trò chơi</button>
+      <button class="game-btn" onclick="showGamesHub()">&#127918; Trò chơi</button>
       <button class="vocab-btn" onclick="showVocabSelect()">&#128214; Từ vựng</button>
       <button class="grammar-btn" onclick="showGrammarSelect()">&#128221; Ngữ pháp</button>
       <button class="article-btn" onclick="showArticleInput()">&#128196; Gõ bài văn</button>
@@ -1142,9 +1279,17 @@
     </div>
   </div>
 
+  <!-- GAMES HUB (ARCADE) SCREEN -->
+  <div id="games-hub-screen">
+    <button class="back-btn" onclick="showSelect()">&larr; Quay lại</button>
+    <h1>&#127918; Khu Trò Chơi</h1>
+    <p class="subtitle">Chọn một trò chơi để vừa chơi vừa luyện gõ nhé!</p>
+    <div class="games-hub-grid" id="games-hub-grid"></div>
+  </div>
+
   <!-- GAME SELECT SCREEN -->
   <div id="game-select-screen">
-    <button class="back-btn" onclick="showSelect()">&larr; Quay lại</button>
+    <button class="back-btn" onclick="showGamesHub()">&larr; Khu trò chơi</button>
     <h1>&#127783;&#65039; Mưa Chữ</h1>
     <p class="subtitle">Gõ chữ trên bong bóng trước khi nó rơi chạm đất nhé!</p>
     <div class="game-howto">
@@ -1180,8 +1325,212 @@
     </div>
     <div class="result-buttons">
       <button class="btn btn-primary" id="game-btn-retry">Chơi lại</button>
-      <button class="btn btn-success" onclick="showGameSelect()">Trò chơi khác</button>
+      <button class="btn btn-success" onclick="showGamesHub()">Trò chơi khác</button>
       <button class="btn btn-secondary" onclick="showSelect()">Về trang chủ</button>
+    </div>
+  </div>
+
+  <!-- RACE INTRO SCREEN -->
+  <div id="race-intro-screen">
+    <button class="back-btn" onclick="showGamesHub()">&larr; Khu trò chơi</button>
+    <h1>&#127937; Đua Thú Gõ Chữ</h1>
+    <p class="subtitle">Gõ đúng các từ để con mèo &#128049; của bé chạy về đích trước đối thủ!</p>
+    <div class="game-howto">
+      &#127919; <strong>Cách chơi:</strong> Mỗi từ con gõ xong, mèo &#128049; sẽ chạy thêm một đoạn. Gõ đủ <strong>12 từ</strong> để về đích.
+      Chọn đối thủ phù hợp &mdash; thắng đối thủ càng nhanh càng nhiều &#11088; sao!
+    </div>
+    <div class="game-level-grid" id="race-opponent-grid"></div>
+  </div>
+
+  <!-- RACE PLAY SCREEN -->
+  <div id="race-play-screen">
+    <button class="back-btn" onclick="quitRace()">&larr; Dừng đua</button>
+    <div class="game-hud">
+      <div class="hud-box score">&#127937; Từ: <span id="race-progress">0</span>/<span id="race-total">12</span></div>
+      <div class="hud-box level">&#9201;&#65039; <span id="race-time">0:00</span></div>
+      <button class="hud-mute" id="race-mute" onclick="toggleGameSound()">&#128266;</button>
+    </div>
+    <div class="race-track" id="race-track">
+      <div class="race-lane">
+        <span class="race-label">Con &#128049;</span>
+        <div class="race-runner" id="race-runner-player">&#128049;</div>
+        <div class="race-finish">&#127937;</div>
+      </div>
+      <div class="race-lane">
+        <span class="race-label" id="race-cpu-label">Đối thủ</span>
+        <div class="race-runner" id="race-runner-cpu">&#128034;</div>
+        <div class="race-finish">&#127937;</div>
+      </div>
+    </div>
+    <div class="race-word-zone">
+      <div style="font-size:0.95em;font-weight:600;color:#15803d;margin-bottom:8px;">Gõ từ này thật nhanh:</div>
+      <div class="letter-boxes" id="race-letter-boxes"></div>
+      <div class="finger-hint" id="race-finger-hint"></div>
+    </div>
+  </div>
+
+  <!-- RACE RESULT SCREEN -->
+  <div id="race-result-screen">
+    <div class="result-box">
+      <h2 id="race-result-title"></h2>
+      <div class="result-score" id="race-result-score"></div>
+      <div class="result-stars" id="race-result-stars"></div>
+      <div class="result-message" id="race-result-message"></div>
+      <div class="stars-earned-note" id="race-stars-earned" style="display:none;"></div>
+    </div>
+    <div class="result-buttons">
+      <button class="btn btn-primary" id="race-btn-retry">Đua lại</button>
+      <button class="btn btn-success" onclick="showRaceIntro()">Đổi đối thủ</button>
+      <button class="btn btn-secondary" onclick="showGamesHub()">Khu trò chơi</button>
+    </div>
+  </div>
+
+  <!-- WHACK-A-MOLE INTRO SCREEN -->
+  <div id="whack-intro-screen">
+    <button class="back-btn" onclick="showGamesHub()">&larr; Khu trò chơi</button>
+    <h1>&#128057; Đập Chuột Chũi</h1>
+    <p class="subtitle">Chuột chũi ló lên cầm một chữ cái — gõ đúng chữ đó để đập nó!</p>
+    <div class="game-howto">
+      &#127919; <strong>Cách chơi:</strong> Chuột chũi &#128057; nhô lên từ các hang, mỗi con mang một chữ. Gõ đúng chữ để "đập" trước khi nó chui xuống.
+      Đập càng nhiều, combo càng cao &mdash; chơi trong <strong>60 giây</strong> để ghi điểm và nhận &#11088; sao!
+    </div>
+    <div style="text-align:center;margin:14px 0;">
+      <span class="star-wallet" id="whack-high-display">&#127942; Kỷ lục: 0</span>
+    </div>
+    <div style="text-align:center;">
+      <button class="btn btn-primary" onclick="startWhack()" style="font-size:1.2em;padding:16px 40px;">&#9654;&#65039; Bắt đầu (60 giây)</button>
+    </div>
+  </div>
+
+  <!-- WHACK-A-MOLE PLAY SCREEN -->
+  <div id="whack-play-screen">
+    <button class="back-btn" onclick="quitWhack()">&larr; Dừng chơi</button>
+    <div class="game-hud">
+      <div class="hud-box score">&#11088; Điểm: <span id="whack-score">0</span></div>
+      <div class="hud-box level">&#9201;&#65039; <span id="whack-time">60</span>s</div>
+      <div class="hud-box combo">&#128293; Combo: <span id="whack-combo">0</span></div>
+      <button class="hud-mute" id="whack-mute" onclick="toggleGameSound()">&#128266;</button>
+    </div>
+    <div class="whack-grid" id="whack-grid"></div>
+    <p style="text-align:center;color:#6b7280;font-size:0.95em;">Gõ chữ trên lưng chuột chũi để đập nó trước khi nó chui xuống hang!</p>
+  </div>
+
+  <!-- WHACK-A-MOLE RESULT SCREEN -->
+  <div id="whack-result-screen">
+    <div class="result-box">
+      <h2 id="whack-result-title">&#127881; Hết giờ!</h2>
+      <div class="result-score" id="whack-result-score">0</div>
+      <div class="result-stars" id="whack-result-stars"></div>
+      <div class="result-message" id="whack-result-message"></div>
+      <div class="stars-earned-note" id="whack-stars-earned" style="display:none;"></div>
+      <p id="whack-high-note" style="color:#a21caf;font-weight:700;margin-top:8px;"></p>
+    </div>
+    <div class="result-buttons">
+      <button class="btn btn-primary" onclick="startWhack()">Chơi lại</button>
+      <button class="btn btn-secondary" onclick="showGamesHub()">Khu trò chơi</button>
+    </div>
+  </div>
+
+  <!-- TIME ATTACK INTRO SCREEN -->
+  <div id="ta-intro-screen">
+    <button class="back-btn" onclick="showGamesHub()">&larr; Khu trò chơi</button>
+    <h1>&#9201;&#65039; Gõ Nhanh 60 Giây</h1>
+    <p class="subtitle">Gõ càng nhiều từ càng tốt trong 1 phút — phá kỷ lục của chính mình!</p>
+    <div class="game-howto">
+      &#127919; <strong>Cách chơi:</strong> Một từ hiện ra, con gõ xong là có từ mới ngay. Gõ thật nhanh và chính xác trong <strong>60 giây</strong>.
+      Không có mạng &mdash; cứ thoải mái luyện tốc độ (WPM) và nhận &#11088; sao theo số từ gõ được!
+    </div>
+    <div style="text-align:center;margin:14px 0;">
+      <span class="star-wallet" id="ta-high-display">&#127942; Kỷ lục: 0 từ</span>
+    </div>
+    <div style="text-align:center;">
+      <button class="btn btn-primary" onclick="startTimeAttack()" style="font-size:1.2em;padding:16px 40px;">&#9654;&#65039; Bắt đầu (60 giây)</button>
+    </div>
+  </div>
+
+  <!-- TIME ATTACK PLAY SCREEN -->
+  <div id="ta-play-screen">
+    <button class="back-btn" onclick="quitTimeAttack()">&larr; Dừng chơi</button>
+    <div class="game-hud">
+      <div class="hud-box level">&#9201;&#65039; <span id="ta-time">60</span>s</div>
+      <div class="hud-box score">&#9997;&#65039; Từ: <span id="ta-words">0</span></div>
+      <div class="hud-box combo">&#128640; <span id="ta-wpm">0</span> WPM</div>
+      <button class="hud-mute" id="ta-mute" onclick="toggleGameSound()">&#128266;</button>
+    </div>
+    <div style="text-align:center;margin:30px 0 10px;">
+      <div style="font-size:0.95em;font-weight:600;color:#1d4ed8;margin-bottom:14px;">Gõ từ này:</div>
+      <div class="letter-boxes" id="ta-letter-boxes" style="font-size:1.2em;"></div>
+      <div class="finger-hint" id="ta-finger-hint"></div>
+    </div>
+  </div>
+
+  <!-- TIME ATTACK RESULT SCREEN -->
+  <div id="ta-result-screen">
+    <div class="result-box">
+      <h2 id="ta-result-title">&#127881; Hết giờ!</h2>
+      <div class="result-score" id="ta-result-score">0</div>
+      <div class="result-stars" id="ta-result-stars"></div>
+      <div class="result-message" id="ta-result-message"></div>
+      <div class="stars-earned-note" id="ta-stars-earned" style="display:none;"></div>
+      <p id="ta-high-note" style="color:#a21caf;font-weight:700;margin-top:8px;"></p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px;">
+      <div class="article-stat correct" style="text-align:center;padding:16px;"><div style="font-size:0.85em;">Số từ gõ được</div><div style="font-size:1.6em;font-weight:800;" id="ta-final-words">0</div></div>
+      <div class="article-stat wpm" style="text-align:center;padding:16px;"><div style="font-size:0.85em;">Tốc độ</div><div style="font-size:1.6em;font-weight:800;"><span id="ta-final-wpm">0</span> WPM</div></div>
+      <div class="article-stat time" style="text-align:center;padding:16px;"><div style="font-size:0.85em;">Chính xác</div><div style="font-size:1.6em;font-weight:800;"><span id="ta-final-acc">0</span>%</div></div>
+    </div>
+    <div class="result-buttons">
+      <button class="btn btn-primary" onclick="startTimeAttack()">Chơi lại</button>
+      <button class="btn btn-secondary" onclick="showGamesHub()">Khu trò chơi</button>
+    </div>
+  </div>
+
+  <!-- KEY HUNT INTRO SCREEN -->
+  <div id="kh-intro-screen">
+    <button class="back-btn" onclick="showGamesHub()">&larr; Khu trò chơi</button>
+    <h1>&#127919; Truy Tìm Phím</h1>
+    <p class="subtitle">Hiện một phím — con tìm và bấm thật nhanh! Hợp với bạn mới học vị trí phím.</p>
+    <div class="game-howto">
+      &#127919; <strong>Cách chơi:</strong> Một chữ cái hiện ra, bàn phím sẽ sáng đúng phím đó kèm gợi ý ngón tay. Con bấm phím đúng càng nhanh càng tốt.
+      Chơi <strong>15 lượt</strong>, máy đo thời gian phản xạ trung bình &mdash; càng nhanh càng nhiều &#11088; sao!
+    </div>
+    <div style="text-align:center;margin:14px 0;">
+      <span class="star-wallet" id="kh-best-display">&#9889; Phản xạ tốt nhất: --</span>
+    </div>
+    <div style="text-align:center;">
+      <button class="btn btn-primary" onclick="startKeyHunt()" style="font-size:1.2em;padding:16px 40px;">&#9654;&#65039; Bắt đầu (15 lượt)</button>
+    </div>
+  </div>
+
+  <!-- KEY HUNT PLAY SCREEN -->
+  <div id="kh-play-screen">
+    <button class="back-btn" onclick="quitKeyHunt()">&larr; Dừng chơi</button>
+    <div class="game-hud">
+      <div class="hud-box score">&#127919; Lượt: <span id="kh-round">1</span>/15</div>
+      <div class="hud-box level">&#9889; Lần trước: <span id="kh-last">--</span></div>
+      <button class="hud-mute" id="kh-mute" onclick="toggleGameSound()">&#128266;</button>
+    </div>
+    <div class="kh-target-zone">
+      <div style="font-size:0.95em;font-weight:600;color:#b91c1c;margin-bottom:10px;">Tìm và bấm phím này:</div>
+      <div class="kh-target" id="kh-target">A</div>
+    </div>
+    <div class="finger-hint" id="kh-finger-hint"></div>
+    <div class="keyboard" id="kh-keyboard"></div>
+  </div>
+
+  <!-- KEY HUNT RESULT SCREEN -->
+  <div id="kh-result-screen">
+    <div class="result-box">
+      <h2 id="kh-result-title">&#127881; Hoàn thành!</h2>
+      <div class="result-score" id="kh-result-score">0ms</div>
+      <div class="result-stars" id="kh-result-stars"></div>
+      <div class="result-message" id="kh-result-message"></div>
+      <div class="stars-earned-note" id="kh-stars-earned" style="display:none;"></div>
+      <p id="kh-best-note" style="color:#a21caf;font-weight:700;margin-top:8px;"></p>
+    </div>
+    <div class="result-buttons">
+      <button class="btn btn-primary" onclick="startKeyHunt()">Chơi lại</button>
+      <button class="btn btn-secondary" onclick="showGamesHub()">Khu trò chơi</button>
     </div>
   </div>
 
@@ -1500,9 +1849,9 @@ function updateStarDisplays() {
 }
 
 // --- Screen switching ---
-const ALL_SCREENS = ['select-screen','practice-screen','result-screen','shop-screen','vocab-select-screen','vocab-practice-screen','vocab-result-screen','grammar-select-screen','grammar-practice-screen','grammar-result-screen','article-input-screen','article-practice-screen','article-result-screen','game-select-screen','game-play-screen','game-over-screen'];
+const ALL_SCREENS = ['select-screen','practice-screen','result-screen','shop-screen','vocab-select-screen','vocab-practice-screen','vocab-result-screen','grammar-select-screen','grammar-practice-screen','grammar-result-screen','article-input-screen','article-practice-screen','article-result-screen','games-hub-screen','game-select-screen','game-play-screen','game-over-screen','race-intro-screen','race-play-screen','race-result-screen','whack-intro-screen','whack-play-screen','whack-result-screen','ta-intro-screen','ta-play-screen','ta-result-screen','kh-intro-screen','kh-play-screen','kh-result-screen'];
 function hideAllScreens() {
-  ALL_SCREENS.forEach(id => document.getElementById(id).style.display = 'none');
+  ALL_SCREENS.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
 }
 function showSelect() {
   hideAllScreens();
@@ -2761,6 +3110,49 @@ function quitArticle() {
 }
 
 // ============================================
+// === GAMES HUB (ARCADE) ===
+// ============================================
+const GAMES_HUB = [
+  { emoji: '&#127783;&#65039;', name: 'Mưa Chữ',          desc: 'Gõ chữ rơi trước khi chạm đất',     action: 'showGameSelect',     bg: 'linear-gradient(135deg,#8b5cf6,#6d28d9)', highKey: null },
+  { emoji: '&#127937;',          name: 'Đua Thú Gõ Chữ',  desc: 'Gõ từ để về đích trước máy',         action: 'showRaceIntro',      bg: 'linear-gradient(135deg,#22c55e,#15803d)', highKey: null },
+  { emoji: '&#128057;',          name: 'Đập Chuột Chũi',  desc: 'Gõ đúng chữ để đập chuột chũi',      action: 'showWhackIntro',     bg: 'linear-gradient(135deg,#f59e0b,#b45309)', highKey: 'whack' },
+  { emoji: '&#9201;&#65039;',    name: 'Gõ Nhanh 60 Giây', desc: 'Gõ nhiều từ nhất trong 1 phút',     action: 'showTimeAttackIntro', bg: 'linear-gradient(135deg,#3b82f6,#1d4ed8)', highKey: 'timeattack' },
+  { emoji: '&#127919;',          name: 'Truy Tìm Phím',   desc: 'Tìm và bấm phím thật nhanh',          action: 'showKeyHuntIntro',   bg: 'linear-gradient(135deg,#ef4444,#b91c1c)', highKey: null },
+];
+
+function showGamesHub() {
+  hideAllScreens();
+  document.getElementById('games-hub-screen').style.display = 'block';
+  renderGamesHub();
+}
+
+function renderGamesHub() {
+  const grid = document.getElementById('games-hub-grid');
+  grid.innerHTML = '';
+  const highs = getGameHighScores();
+  GAMES_HUB.forEach(g => {
+    const fn = window[g.action];
+    const available = (typeof fn === 'function');
+    const card = document.createElement('div');
+    card.className = 'hub-card' + (available ? '' : ' locked');
+    card.style.background = g.bg;
+    let highHtml = '';
+    if (g.highKey && highs[g.highKey]) highHtml = `<div class="hub-high">&#127942; Kỷ lục: ${highs[g.highKey]}</div>`;
+    card.innerHTML = `
+      <div class="hub-emoji">${g.emoji}</div>
+      <div>
+        <div class="hub-name">${g.name}</div>
+        <div class="hub-desc">${g.desc}</div>
+        ${highHtml}
+      </div>
+      ${available ? '' : '<div class="hub-soon">Sắp ra mắt</div>'}
+    `;
+    if (available) card.onclick = fn;
+    grid.appendChild(card);
+  });
+}
+
+// ============================================
 // === GAME MODE: MƯA CHỮ (Falling Letters) ===
 // ============================================
 const GAME_LETTERS_EASY = ['a','s','d','f','g','h','j','k','l'];               // home row
@@ -3193,6 +3585,695 @@ function handleGameOverEnter(e) {
   }
   document.removeEventListener('keydown', handleGameOverEnter);
   startGame(currentGameLevel);
+}
+
+// ============================================
+// === GAME: ĐUA THÚ GÕ CHỮ (Typing Race) ===
+// ============================================
+const RACE_WORDS = GAME_WORDS.concat(['water','green','happy','small','light','music','plant','smile','cloud','dream','table','chair','apple','grape','bread','sugar','river','beach','grass','sweet']);
+const RACE_OPPONENTS = [
+  { id: 'turtle',  name: 'Rùa máy',  emoji: '&#128034;', finishMs: 42000, stars: 2, desc: 'Chậm rãi — dễ thắng' },
+  { id: 'fox',     name: 'Cáo máy',  emoji: '&#129418;', finishMs: 30000, stars: 3, desc: 'Vừa phải — cần cố gắng' },
+  { id: 'cheetah', name: 'Báo máy',  emoji: '&#128006;', finishMs: 21000, stars: 4, desc: 'Siêu nhanh — thử thách!' },
+];
+const RACE_TOTAL = 12;
+
+let raceOpponent = null;
+let raceWord = '';
+let raceLetterIdx = 0;
+let raceWordsDone = 0;
+let racePlayerPos = 0;
+let raceCpuPos = 0;
+let raceCpuInterval = null;
+let raceTimerInterval = null;
+let raceStartTime = 0;
+let raceOver = false;
+let raceMistakes = 0;
+
+function showRaceIntro() {
+  hideAllScreens();
+  document.getElementById('race-intro-screen').style.display = 'block';
+  renderRaceOpponents();
+}
+function showRacePlay() { hideAllScreens(); document.getElementById('race-play-screen').style.display = 'block'; }
+function showRaceResult() { hideAllScreens(); document.getElementById('race-result-screen').style.display = 'block'; }
+
+function renderRaceOpponents() {
+  const grid = document.getElementById('race-opponent-grid');
+  grid.innerHTML = '';
+  RACE_OPPONENTS.forEach(opp => {
+    const card = document.createElement('div');
+    card.className = 'game-level-card';
+    card.onclick = () => startRace(opp);
+    card.innerHTML = `
+      <div class="gl-emoji">${opp.emoji}</div>
+      <div class="gl-name">${opp.name}</div>
+      <div class="gl-desc">${opp.desc}</div>
+      <div class="gl-high">&#11088; Thắng được ${opp.stars} sao</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function startRace(opp) {
+  raceOpponent = opp;
+  raceWordsDone = 0; raceLetterIdx = 0; racePlayerPos = 0; raceCpuPos = 0; raceOver = false; raceMistakes = 0;
+  raceStartTime = Date.now();
+  document.getElementById('race-total').textContent = RACE_TOTAL;
+  document.getElementById('race-progress').textContent = '0';
+  document.getElementById('race-cpu-label').innerHTML = opp.name + ' ' + opp.emoji;
+  document.getElementById('race-runner-cpu').innerHTML = opp.emoji;
+  document.getElementById('race-time').textContent = '0:00';
+  document.getElementById('race-mute').innerHTML = gameSoundOn ? '&#128266;' : '&#128263;';
+  updateRacePositions();
+  showRacePlay();
+  initGameAudio();
+  loadRaceWord();
+  document.removeEventListener('keydown', handleRaceKey);
+  document.addEventListener('keydown', handleRaceKey);
+  if (raceCpuInterval) clearInterval(raceCpuInterval);
+  raceCpuInterval = setInterval(raceCpuTick, 120);
+  if (raceTimerInterval) clearInterval(raceTimerInterval);
+  raceTimerInterval = setInterval(updateRaceTimer, 500);
+}
+
+function loadRaceWord() {
+  raceWord = RACE_WORDS[randInt(RACE_WORDS.length)];
+  raceLetterIdx = 0;
+  const c = document.getElementById('race-letter-boxes');
+  c.innerHTML = '';
+  for (let i = 0; i < raceWord.length; i++) {
+    const b = document.createElement('div');
+    b.className = 'letter-box' + (i === 0 ? ' current' : '');
+    b.id = 'rlb-' + i;
+    c.appendChild(b);
+  }
+  updateRaceFingerHint(raceWord[0]);
+}
+
+function updateRaceFingerHint(ch) {
+  const hint = document.getElementById('race-finger-hint');
+  const info = ch ? FINGER_MAP[ch.toLowerCase()] : null;
+  if (info) hint.innerHTML = `Dùng <strong>${info.finger}</strong> cho phím <strong>${ch.toUpperCase()}</strong>`;
+  else hint.innerHTML = '';
+}
+
+function updateRacePositions() {
+  const toLeft = p => Math.min(88, Math.max(0, p) * 88) + '%';
+  const pl = document.getElementById('race-runner-player');
+  const cp = document.getElementById('race-runner-cpu');
+  if (pl) pl.style.left = toLeft(racePlayerPos);
+  if (cp) cp.style.left = toLeft(raceCpuPos);
+}
+
+function hopRunner(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('hop');
+  setTimeout(() => el.classList.remove('hop'), 350);
+}
+
+function updateRaceTimer() {
+  if (raceOver) return;
+  const elapsed = Math.floor((Date.now() - raceStartTime) / 1000);
+  const m = Math.floor(elapsed / 60), s = elapsed % 60;
+  document.getElementById('race-time').textContent = `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function raceCpuTick() {
+  if (raceOver) return;
+  raceCpuPos += 120 / raceOpponent.finishMs;
+  if (raceCpuPos >= 1) { raceCpuPos = 1; updateRacePositions(); finishRace(false); return; }
+  updateRacePositions();
+}
+
+function handleRaceKey(e) {
+  if (raceOver) return;
+  if (e.ctrlKey || e.altKey || e.metaKey) return;
+  const pressed = e.key;
+  if (pressed.length !== 1 || !/[a-z]/i.test(pressed)) return;
+  e.preventDefault();
+  const expected = raceWord[raceLetterIdx];
+  const box = document.getElementById('rlb-' + raceLetterIdx);
+  if (pressed.toLowerCase() === expected.toLowerCase()) {
+    box.className = 'letter-box correct';
+    box.textContent = expected.toLowerCase();
+    raceLetterIdx++;
+    soundType();
+    if (raceLetterIdx >= raceWord.length) {
+      raceWordsDone++;
+      document.getElementById('race-progress').textContent = raceWordsDone;
+      racePlayerPos = raceWordsDone / RACE_TOTAL;
+      updateRacePositions();
+      hopRunner('race-runner-player');
+      soundPop();
+      if (raceWordsDone >= RACE_TOTAL) { finishRace(true); return; }
+      loadRaceWord();
+    } else {
+      const nb = document.getElementById('rlb-' + raceLetterIdx);
+      if (nb) nb.classList.add('current');
+      updateRaceFingerHint(raceWord[raceLetterIdx]);
+    }
+  } else {
+    box.classList.add('wrong');
+    raceMistakes++;
+    setTimeout(() => { if (box) box.classList.remove('wrong'); }, 300);
+    soundMiss();
+  }
+}
+
+function teardownRace() {
+  raceOver = true;
+  if (raceCpuInterval) { clearInterval(raceCpuInterval); raceCpuInterval = null; }
+  if (raceTimerInterval) { clearInterval(raceTimerInterval); raceTimerInterval = null; }
+  document.removeEventListener('keydown', handleRaceKey);
+}
+
+function quitRace() {
+  teardownRace();
+  showRaceIntro();
+}
+
+function finishRace(won) {
+  if (raceOver) return;
+  teardownRace(); // sets raceOver = true
+  const elapsed = Math.max(1, Math.floor((Date.now() - raceStartTime) / 1000));
+  const m = Math.floor(elapsed / 60), s = elapsed % 60;
+  const timeStr = `${m}:${s.toString().padStart(2, '0')}`;
+
+  let stars = 0;
+  if (won) stars = raceOpponent.stars;
+  else stars = (raceWordsDone >= RACE_TOTAL / 2) ? 1 : 0;
+
+  document.getElementById('race-result-title').innerHTML = won ? '&#127942; Con đã THẮNG!' : '&#128542; Đối thủ về đích trước';
+  const scoreEl = document.getElementById('race-result-score');
+  scoreEl.textContent = won ? ('Về đích sau ' + timeStr) : (raceWordsDone + '/' + RACE_TOTAL + ' từ');
+  scoreEl.className = 'result-score ' + (won ? 'score-great' : 'score-ok');
+
+  const starsEl = document.getElementById('race-result-stars');
+  starsEl.innerHTML = stars > 0
+    ? `<span style="font-size:1.5em;">&#11088; x ${stars}</span>`
+    : '<span style="font-size:1.1em;color:#9ca3af;">Chưa có sao - thử lại nhé!</span>';
+
+  const msgEl = document.getElementById('race-result-message');
+  if (won) msgEl.textContent = 'Tuyệt vời! Con gõ nhanh hơn ' + raceOpponent.name + '! (' + raceMistakes + ' lỗi)';
+  else msgEl.textContent = 'Sát nút rồi! Gõ nhanh và chính xác hơn để thắng nhé!';
+
+  const earned = document.getElementById('race-stars-earned');
+  if (stars > 0) {
+    setTotalStars(getTotalStars() + stars);
+    earned.innerHTML = `&#11088; +${stars} sao! (Tổng: ${getTotalStars()} sao)`;
+    earned.style.display = 'inline-block';
+  } else { earned.style.display = 'none'; }
+
+  if (won) soundLevel(); else soundMiss();
+
+  document.getElementById('race-btn-retry').onclick = () => startRace(raceOpponent);
+  showRaceResult();
+}
+
+// ============================================
+// === GAME: ĐẬP CHUỘT CHŨI (Whack-a-mole) ===
+// ============================================
+const WHACK_HOLES = 9;
+const WHACK_DURATION = 60;
+let whackHoles = [];          // per index: { letter, up, timeout } or null
+let whackScore = 0, whackCombo = 0, whackMaxCombo = 0, whackTimeLeft = WHACK_DURATION, whackHits = 0, whackMisses = 0;
+let whackSpawnTimer = null, whackCountdown = null, whackRunning = false;
+let whackSpawnInterval = 1100, whackLifetime = 2100;
+
+function showWhackIntro() {
+  hideAllScreens();
+  document.getElementById('whack-intro-screen').style.display = 'block';
+  const hi = getGameHighScores()['whack'] || 0;
+  document.getElementById('whack-high-display').innerHTML = '&#127942; Kỷ lục: ' + hi;
+}
+function showWhackPlay() { hideAllScreens(); document.getElementById('whack-play-screen').style.display = 'block'; }
+function showWhackResult() { hideAllScreens(); document.getElementById('whack-result-screen').style.display = 'block'; }
+
+function renderWhackGrid() {
+  const grid = document.getElementById('whack-grid');
+  grid.innerHTML = '';
+  for (let i = 0; i < WHACK_HOLES; i++) {
+    const hole = document.createElement('div');
+    hole.className = 'whack-hole';
+    hole.id = 'whack-hole-' + i;
+    hole.innerHTML = '<div class="whack-mole"><span class="mole-face">&#128057;</span><span class="mole-letter"></span></div>';
+    grid.appendChild(hole);
+  }
+}
+
+function updateWhackHud() {
+  document.getElementById('whack-score').textContent = whackScore;
+  document.getElementById('whack-combo').textContent = whackCombo;
+}
+
+function startWhack() {
+  whackScore = 0; whackCombo = 0; whackMaxCombo = 0; whackHits = 0; whackMisses = 0;
+  whackTimeLeft = WHACK_DURATION;
+  whackSpawnInterval = 1100; whackLifetime = 2100;
+  whackHoles = new Array(WHACK_HOLES).fill(null);
+  renderWhackGrid();
+  updateWhackHud();
+  document.getElementById('whack-time').textContent = WHACK_DURATION;
+  document.getElementById('whack-mute').innerHTML = gameSoundOn ? '&#128266;' : '&#128263;';
+  showWhackPlay();
+  initGameAudio();
+  whackRunning = true;
+  document.removeEventListener('keydown', handleWhackKey);
+  document.addEventListener('keydown', handleWhackKey);
+  if (whackCountdown) clearInterval(whackCountdown);
+  whackCountdown = setInterval(whackTick, 1000);
+  spawnWhackMole();
+  scheduleNextWhackSpawn();
+}
+
+function scheduleNextWhackSpawn() {
+  if (!whackRunning) return;
+  if (whackSpawnTimer) clearTimeout(whackSpawnTimer);
+  whackSpawnTimer = setTimeout(() => { spawnWhackMole(); scheduleNextWhackSpawn(); }, whackSpawnInterval);
+}
+
+function spawnWhackMole() {
+  if (!whackRunning) return;
+  // difficulty ramps up with score
+  whackSpawnInterval = Math.max(520, 1100 - whackScore * 8);
+  whackLifetime = Math.max(850, 2100 - whackScore * 14);
+  const empty = [];
+  for (let i = 0; i < WHACK_HOLES; i++) if (!whackHoles[i]) empty.push(i);
+  if (empty.length === 0) return;
+  const idx = empty[randInt(empty.length)];
+  const letter = GAME_LETTERS_MED[randInt(26)];
+  whackHoles[idx] = { letter, up: true, timeout: null };
+  const el = document.getElementById('whack-hole-' + idx);
+  const lt = el.querySelector('.mole-letter');
+  lt.textContent = letter.toUpperCase();
+  const fi = FINGER_MAP[letter];
+  lt.className = 'mole-letter ' + (fi ? fi.cls : '');
+  el.classList.add('up');
+  whackHoles[idx].timeout = setTimeout(() => {
+    if (whackHoles[idx]) { hideWhackMole(idx); whackMisses++; whackCombo = 0; updateWhackHud(); soundMiss(); }
+  }, whackLifetime);
+}
+
+function hideWhackMole(idx) {
+  const el = document.getElementById('whack-hole-' + idx);
+  if (el) el.classList.remove('up');
+  if (whackHoles[idx] && whackHoles[idx].timeout) clearTimeout(whackHoles[idx].timeout);
+  whackHoles[idx] = null;
+}
+
+function handleWhackKey(e) {
+  if (!whackRunning) return;
+  if (e.ctrlKey || e.altKey || e.metaKey) return;
+  const key = e.key.toLowerCase();
+  if (key.length !== 1 || !/[a-z]/.test(key)) return;
+  e.preventDefault();
+  let idx = -1;
+  for (let i = 0; i < WHACK_HOLES; i++) {
+    if (whackHoles[i] && whackHoles[i].up && whackHoles[i].letter === key) { idx = i; break; }
+  }
+  if (idx >= 0) {
+    whackScore++; whackHits++; whackCombo++;
+    if (whackCombo > whackMaxCombo) whackMaxCombo = whackCombo;
+    const el = document.getElementById('whack-hole-' + idx);
+    if (el) { el.classList.add('bonk'); setTimeout(() => el.classList.remove('bonk'), 250); }
+    hideWhackMole(idx);
+    updateWhackHud();
+    soundPop();
+  } else {
+    whackCombo = 0;
+    updateWhackHud();
+    soundMiss();
+  }
+}
+
+function whackTick() {
+  whackTimeLeft--;
+  document.getElementById('whack-time').textContent = whackTimeLeft;
+  if (whackTimeLeft <= 0) whackOver();
+}
+
+function teardownWhack() {
+  whackRunning = false;
+  if (whackSpawnTimer) { clearTimeout(whackSpawnTimer); whackSpawnTimer = null; }
+  if (whackCountdown) { clearInterval(whackCountdown); whackCountdown = null; }
+  for (let i = 0; i < WHACK_HOLES; i++) {
+    if (whackHoles[i] && whackHoles[i].timeout) clearTimeout(whackHoles[i].timeout);
+  }
+  document.removeEventListener('keydown', handleWhackKey);
+}
+
+function quitWhack() {
+  teardownWhack();
+  whackHoles = new Array(WHACK_HOLES).fill(null);
+  showWhackIntro();
+}
+
+function whackOver() {
+  teardownWhack();
+  for (let i = 0; i < WHACK_HOLES; i++) { const el = document.getElementById('whack-hole-' + i); if (el) el.classList.remove('up'); }
+  whackHoles = new Array(WHACK_HOLES).fill(null);
+
+  const prev = getGameHighScores()['whack'] || 0;
+  const isNewHigh = whackScore > prev;
+  setGameHighScore('whack', whackScore);
+  const stars = Math.floor(whackScore / 10);
+  const totalAttempts = whackHits + whackMisses;
+  const acc = totalAttempts > 0 ? Math.round((whackHits / totalAttempts) * 100) : 0;
+
+  document.getElementById('whack-result-title').innerHTML = whackScore > 0 ? '&#127881; Hết giờ!' : '&#128528; Hết giờ!';
+  const scoreEl = document.getElementById('whack-result-score');
+  scoreEl.textContent = whackScore + ' chú chuột';
+  scoreEl.className = 'result-score ' + (stars >= 4 ? 'score-great' : stars >= 2 ? 'score-good' : stars >= 1 ? 'score-ok' : 'score-bad');
+
+  const starsEl = document.getElementById('whack-result-stars');
+  starsEl.innerHTML = stars > 0
+    ? `<span style="font-size:1.5em;">&#11088; x ${stars}</span>`
+    : '<span style="font-size:1.1em;color:#9ca3af;">Chưa có sao - thử lại nhé!</span>';
+
+  const msgEl = document.getElementById('whack-result-message');
+  if (whackScore >= 40) msgEl.textContent = 'Siêu nhanh tay! Combo cao nhất: ' + whackMaxCombo + ' — chính xác ' + acc + '%';
+  else if (whackScore >= 20) msgEl.textContent = 'Giỏi lắm! Combo cao nhất: ' + whackMaxCombo + ' — chính xác ' + acc + '%';
+  else msgEl.textContent = 'Cố lên! Nhìn nhanh chữ trên lưng chuột và gõ ngay nhé!';
+
+  const earned = document.getElementById('whack-stars-earned');
+  if (stars > 0) {
+    setTotalStars(getTotalStars() + stars);
+    earned.innerHTML = `&#11088; +${stars} sao! (Tổng: ${getTotalStars()} sao)`;
+    earned.style.display = 'inline-block';
+  } else { earned.style.display = 'none'; }
+
+  document.getElementById('whack-high-note').innerHTML = (isNewHigh && whackScore > 0)
+    ? '&#127942; Kỷ lục mới: ' + whackScore + ' chú chuột!'
+    : 'Kỷ lục của con: ' + Math.max(prev, whackScore);
+
+  if (whackScore > 0) soundLevel(); else soundMiss();
+  showWhackResult();
+}
+
+// ============================================
+// === GAME: GÕ NHANH 60 GIÂY (Time Attack) ===
+// ============================================
+const TA_DURATION = 60;
+let taWord = '', taLetterIdx = 0, taWordsDone = 0, taCorrectChars = 0, taMistakes = 0;
+let taTimeLeft = TA_DURATION, taCountdown = null, taRunning = false, taStartTime = 0;
+
+function showTimeAttackIntro() {
+  hideAllScreens();
+  document.getElementById('ta-intro-screen').style.display = 'block';
+  const hi = getGameHighScores()['timeattack'] || 0;
+  document.getElementById('ta-high-display').innerHTML = '&#127942; Kỷ lục: ' + hi + ' từ';
+}
+function showTaPlay() { hideAllScreens(); document.getElementById('ta-play-screen').style.display = 'block'; }
+function showTaResult() { hideAllScreens(); document.getElementById('ta-result-screen').style.display = 'block'; }
+
+function startTimeAttack() {
+  taWordsDone = 0; taLetterIdx = 0; taCorrectChars = 0; taMistakes = 0;
+  taTimeLeft = TA_DURATION; taRunning = true; taStartTime = Date.now();
+  document.getElementById('ta-time').textContent = TA_DURATION;
+  document.getElementById('ta-words').textContent = '0';
+  document.getElementById('ta-wpm').textContent = '0';
+  document.getElementById('ta-mute').innerHTML = gameSoundOn ? '&#128266;' : '&#128263;';
+  showTaPlay();
+  initGameAudio();
+  loadTaWord();
+  document.removeEventListener('keydown', handleTaKey);
+  document.addEventListener('keydown', handleTaKey);
+  if (taCountdown) clearInterval(taCountdown);
+  taCountdown = setInterval(taTick, 1000);
+}
+
+function loadTaWord() {
+  taWord = RACE_WORDS[randInt(RACE_WORDS.length)];
+  taLetterIdx = 0;
+  const c = document.getElementById('ta-letter-boxes');
+  c.innerHTML = '';
+  for (let i = 0; i < taWord.length; i++) {
+    const b = document.createElement('div');
+    b.className = 'letter-box' + (i === 0 ? ' current' : '');
+    b.id = 'talb-' + i;
+    c.appendChild(b);
+  }
+  updateTaFingerHint(taWord[0]);
+}
+
+function updateTaFingerHint(ch) {
+  const hint = document.getElementById('ta-finger-hint');
+  const info = ch ? FINGER_MAP[ch.toLowerCase()] : null;
+  if (info) hint.innerHTML = `Dùng <strong>${info.finger}</strong> cho phím <strong>${ch.toUpperCase()}</strong>`;
+  else hint.innerHTML = '';
+}
+
+function currentTaWpm() {
+  const mins = Math.max(1 / 60, (Date.now() - taStartTime) / 60000);
+  return Math.round((taCorrectChars / 5) / mins);
+}
+
+function handleTaKey(e) {
+  if (!taRunning) return;
+  if (e.ctrlKey || e.altKey || e.metaKey) return;
+  const pressed = e.key;
+  if (pressed.length !== 1 || !/[a-z]/i.test(pressed)) return;
+  e.preventDefault();
+  const expected = taWord[taLetterIdx];
+  const box = document.getElementById('talb-' + taLetterIdx);
+  if (pressed.toLowerCase() === expected.toLowerCase()) {
+    box.className = 'letter-box correct';
+    box.textContent = expected.toLowerCase();
+    taLetterIdx++;
+    taCorrectChars++;
+    soundType();
+    if (taLetterIdx >= taWord.length) {
+      taWordsDone++;
+      document.getElementById('ta-words').textContent = taWordsDone;
+      document.getElementById('ta-wpm').textContent = currentTaWpm();
+      soundPop();
+      loadTaWord();
+    } else {
+      const nb = document.getElementById('talb-' + taLetterIdx);
+      if (nb) nb.classList.add('current');
+      updateTaFingerHint(taWord[taLetterIdx]);
+    }
+  } else {
+    box.classList.add('wrong');
+    taMistakes++;
+    setTimeout(() => { if (box) box.classList.remove('wrong'); }, 300);
+    soundMiss();
+  }
+}
+
+function taTick() {
+  taTimeLeft--;
+  document.getElementById('ta-time').textContent = taTimeLeft;
+  document.getElementById('ta-wpm').textContent = currentTaWpm();
+  if (taTimeLeft <= 0) taOver();
+}
+
+function teardownTa() {
+  taRunning = false;
+  if (taCountdown) { clearInterval(taCountdown); taCountdown = null; }
+  document.removeEventListener('keydown', handleTaKey);
+}
+
+function quitTimeAttack() {
+  teardownTa();
+  showTimeAttackIntro();
+}
+
+function taOver() {
+  teardownTa();
+  const prev = getGameHighScores()['timeattack'] || 0;
+  const isNewHigh = taWordsDone > prev;
+  setGameHighScore('timeattack', taWordsDone);
+  const wpm = currentTaWpm();
+  const totalTyped = taCorrectChars + taMistakes;
+  const acc = totalTyped > 0 ? Math.round((taCorrectChars / totalTyped) * 100) : 0;
+  const stars = Math.floor(taWordsDone / 4);
+
+  document.getElementById('ta-result-title').innerHTML = taWordsDone > 0 ? '&#127881; Hết giờ!' : '&#128528; Hết giờ!';
+  const scoreEl = document.getElementById('ta-result-score');
+  scoreEl.textContent = taWordsDone + ' từ';
+  scoreEl.className = 'result-score ' + (stars >= 4 ? 'score-great' : stars >= 2 ? 'score-good' : stars >= 1 ? 'score-ok' : 'score-bad');
+
+  document.getElementById('ta-final-words').textContent = taWordsDone;
+  document.getElementById('ta-final-wpm').textContent = wpm;
+  document.getElementById('ta-final-acc').textContent = acc;
+
+  const starsEl = document.getElementById('ta-result-stars');
+  starsEl.innerHTML = stars > 0
+    ? `<span style="font-size:1.5em;">&#11088; x ${stars}</span>`
+    : '<span style="font-size:1.1em;color:#9ca3af;">Chưa có sao - thử lại nhé!</span>';
+
+  const msgEl = document.getElementById('ta-result-message');
+  if (wpm >= 25) msgEl.textContent = 'Tốc độ tuyệt vời! Ngón tay con nhanh thật!';
+  else if (wpm >= 15) msgEl.textContent = 'Khá nhanh! Cố gắng giữ chính xác khi tăng tốc nhé!';
+  else if (taWordsDone > 0) msgEl.textContent = 'Tốt lắm! Luyện thêm để gõ nhanh hơn nào!';
+  else msgEl.textContent = 'Cố lên! Gõ chậm mà chắc trước, rồi nhanh dần nhé!';
+
+  const earned = document.getElementById('ta-stars-earned');
+  if (stars > 0) {
+    setTotalStars(getTotalStars() + stars);
+    earned.innerHTML = `&#11088; +${stars} sao! (Tổng: ${getTotalStars()} sao)`;
+    earned.style.display = 'inline-block';
+  } else { earned.style.display = 'none'; }
+
+  document.getElementById('ta-high-note').innerHTML = (isNewHigh && taWordsDone > 0)
+    ? '&#127942; Kỷ lục mới: ' + taWordsDone + ' từ!'
+    : 'Kỷ lục của con: ' + Math.max(prev, taWordsDone) + ' từ';
+
+  if (taWordsDone > 0) soundLevel(); else soundMiss();
+  showTaResult();
+}
+
+// ============================================
+// === GAME: TRUY TÌM PHÍM (Key Hunt / Reaction) ===
+// ============================================
+const KH_ROUNDS = 15;
+let khTarget = '', khStartTime = 0, khReactions = [], khErrors = 0, khRunning = false;
+
+function showKeyHuntIntro() {
+  hideAllScreens();
+  document.getElementById('kh-intro-screen').style.display = 'block';
+  const best = parseInt(localStorage.getItem('typingKhBest') || '0');
+  document.getElementById('kh-best-display').innerHTML = best > 0 ? ('&#9889; Phản xạ tốt nhất: ' + best + 'ms') : '&#9889; Phản xạ tốt nhất: --';
+}
+function showKhPlay() { hideAllScreens(); document.getElementById('kh-play-screen').style.display = 'block'; }
+function showKhResult() { hideAllScreens(); document.getElementById('kh-result-screen').style.display = 'block'; }
+
+function startKeyHunt() {
+  khReactions = []; khErrors = 0; khRunning = true;
+  document.getElementById('kh-last').textContent = '--';
+  document.getElementById('kh-mute').innerHTML = gameSoundOn ? '&#128266;' : '&#128263;';
+  showKhPlay();
+  initGameAudio();
+  document.removeEventListener('keydown', handleKhKey);
+  document.addEventListener('keydown', handleKhKey);
+  nextKhRound();
+}
+
+function nextKhRound() {
+  khTarget = GAME_LETTERS_MED[randInt(26)];
+  document.getElementById('kh-round').textContent = khReactions.length + 1;
+  const tEl = document.getElementById('kh-target');
+  tEl.textContent = khTarget.toUpperCase();
+  const fi = FINGER_MAP[khTarget];
+  tEl.className = 'kh-target ' + (fi ? fi.cls : '');
+  updateKhFingerHint(khTarget);
+  renderKhKeyboard(khTarget);
+  khStartTime = Date.now();
+}
+
+function updateKhFingerHint(ch) {
+  const hint = document.getElementById('kh-finger-hint');
+  const info = FINGER_MAP[ch];
+  if (info) hint.innerHTML = `Dùng <strong>${info.finger}</strong> để bấm phím <strong>${ch.toUpperCase()}</strong>`;
+  else hint.innerHTML = '';
+}
+
+function renderKhKeyboard(target) {
+  const kb = document.getElementById('kh-keyboard');
+  kb.innerHTML = '';
+  const rows = [
+    { keys: TOP_ROW, offset: 20 },
+    { keys: HOME_ROW, offset: 30 },
+    { keys: BOTTOM_ROW, offset: 45 },
+  ];
+  rows.forEach(rowData => {
+    const row = document.createElement('div');
+    row.className = 'kb-row';
+    row.style.paddingLeft = rowData.offset + 'px';
+    rowData.keys.forEach(key => {
+      const k = document.createElement('div');
+      const info = FINGER_MAP[key];
+      k.className = 'kb-key ' + info.cls;
+      if (target && key === target.toLowerCase()) k.classList.add('active');
+      if (BUMPS.includes(key)) k.classList.add('bump');
+      k.textContent = key.toUpperCase();
+      k.id = 'kh-key-' + key;
+      row.appendChild(k);
+    });
+    kb.appendChild(row);
+  });
+}
+
+function handleKhKey(e) {
+  if (!khRunning) return;
+  if (e.ctrlKey || e.altKey || e.metaKey) return;
+  const key = e.key.toLowerCase();
+  if (key.length !== 1 || !/[a-z]/.test(key)) return;
+  e.preventDefault();
+  if (key === khTarget) {
+    const rt = Date.now() - khStartTime;
+    khReactions.push(rt);
+    document.getElementById('kh-last').textContent = rt + 'ms';
+    soundPop();
+    if (khReactions.length >= KH_ROUNDS) khOver();
+    else nextKhRound();
+  } else {
+    khErrors++;
+    soundMiss();
+    const wk = document.getElementById('kh-key-' + key);
+    if (wk) { wk.classList.add('kh-wrong'); setTimeout(() => wk.classList.remove('kh-wrong'), 250); }
+  }
+}
+
+function teardownKh() {
+  khRunning = false;
+  document.removeEventListener('keydown', handleKhKey);
+}
+
+function quitKeyHunt() {
+  teardownKh();
+  showKeyHuntIntro();
+}
+
+function khOver() {
+  teardownKh();
+  const avg = Math.round(khReactions.reduce((a, b) => a + b, 0) / khReactions.length);
+  const best = Math.min.apply(null, khReactions);
+
+  let stars;
+  if (avg < 700) stars = 5;
+  else if (avg < 900) stars = 4;
+  else if (avg < 1200) stars = 3;
+  else if (avg < 1600) stars = 2;
+  else stars = 1;
+  if (khErrors > KH_ROUNDS) stars = Math.max(1, stars - 1);
+
+  const prevBest = parseInt(localStorage.getItem('typingKhBest') || '0');
+  const isNewBest = (prevBest === 0 || avg < prevBest);
+  if (isNewBest) localStorage.setItem('typingKhBest', String(avg));
+
+  document.getElementById('kh-result-title').innerHTML = '&#127881; Hoàn thành!';
+  const scoreEl = document.getElementById('kh-result-score');
+  scoreEl.textContent = avg + 'ms';
+  scoreEl.className = 'result-score ' + (stars >= 4 ? 'score-great' : stars >= 3 ? 'score-good' : stars >= 2 ? 'score-ok' : 'score-bad');
+
+  const starsEl = document.getElementById('kh-result-stars');
+  starsEl.innerHTML = `<span style="font-size:1.5em;">&#11088; x ${stars}</span>`;
+
+  const msgEl = document.getElementById('kh-result-message');
+  let speedMsg;
+  if (avg < 700) speedMsg = 'Phản xạ chớp nhoáng! Con thuộc phím rất giỏi!';
+  else if (avg < 1000) speedMsg = 'Nhanh lắm! Con nhớ vị trí phím tốt rồi!';
+  else if (avg < 1400) speedMsg = 'Khá tốt! Tập thêm để tìm phím nhanh hơn nhé!';
+  else speedMsg = 'Cố lên! Nhìn màu ngón tay để nhớ vị trí phím nhé!';
+  msgEl.textContent = speedMsg + ' (Nhanh nhất: ' + best + 'ms, gõ nhầm: ' + khErrors + ' lần)';
+
+  const earned = document.getElementById('kh-stars-earned');
+  if (stars > 0) {
+    setTotalStars(getTotalStars() + stars);
+    earned.innerHTML = `&#11088; +${stars} sao! (Tổng: ${getTotalStars()} sao)`;
+    earned.style.display = 'inline-block';
+  } else { earned.style.display = 'none'; }
+
+  document.getElementById('kh-best-note').innerHTML = isNewBest
+    ? '&#127942; Kỷ lục phản xạ mới: ' + avg + 'ms!'
+    : 'Phản xạ tốt nhất của con: ' + Math.min(prevBest || avg, avg) + 'ms';
+
+  soundLevel();
+  showKhResult();
 }
 
 // --- Init ---

@@ -351,8 +351,10 @@
   /* === STAR BALANCE HEADER === */
   .star-balance {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
     margin-bottom: 20px;
   }
   .star-wallet {
@@ -847,6 +849,211 @@
     text-decoration: underline wavy #dc2626;
   }
   .article-text .a-char.a-pending { color: #94a3b8; }
+
+  /* === GAME: MƯA CHỮ (Falling Letters) === */
+  .game-btn {
+    background: linear-gradient(135deg, #ec4899, #8b5cf6);
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    padding: 10px 24px;
+    font-size: 1.05em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .game-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(236,72,153,0.45); }
+  #game-select-screen, #game-play-screen, #game-over-screen { display: none; }
+
+  /* difficulty cards */
+  .game-level-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .game-level-card {
+    background: linear-gradient(135deg, #fdf2f8, #fae8ff);
+    border: 2px solid #f0abfc;
+    border-radius: 16px;
+    padding: 24px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .game-level-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(168,85,247,0.25);
+    border-color: #c026d3;
+  }
+  .game-level-card .gl-emoji { font-size: 3em; }
+  .game-level-card .gl-name { font-weight: 800; font-size: 1.3em; color: #86198f; margin: 6px 0; }
+  .game-level-card .gl-desc { color: #6b7280; font-size: 0.9em; min-height: 38px; }
+  .game-level-card .gl-high { margin-top: 10px; font-size: 0.9em; color: #a21caf; font-weight: 700; }
+
+  .game-howto {
+    background: #fdf4ff;
+    border: 2px solid #f0abfc;
+    border-radius: 14px;
+    padding: 14px 20px;
+    color: #86198f;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+  .game-howto strong { color: #a21caf; }
+
+  /* HUD */
+  .game-hud {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .game-hud .hud-box {
+    border-radius: 14px;
+    padding: 8px 16px;
+    font-weight: 700;
+    font-size: 1.05em;
+    background: #f3f4f6;
+  }
+  .hud-box.score { background: #ede9fe; color: #6d28d9; }
+  .hud-box.level { background: #dbeafe; color: #1d4ed8; }
+  .hud-box.combo { background: #fef3c7; color: #b45309; }
+  .hud-box.lives { background: #fee2e2; color: #b91c1c; font-size: 1.2em; letter-spacing: 2px; }
+  .hud-mute {
+    background: #f3f4f6;
+    border: none;
+    border-radius: 14px;
+    padding: 8px 14px;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .hud-mute:hover { background: #e5e7eb; }
+
+  /* play area (the sky) */
+  .game-area {
+    position: relative;
+    height: clamp(340px, 56vh, 520px);
+    background: linear-gradient(180deg, #e0f2fe 0%, #dbeafe 55%, #c7d2fe 100%);
+    border: 3px solid #a5b4fc;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    box-shadow: inset 0 -30px 40px rgba(99,102,241,0.15);
+  }
+  /* grass ground line */
+  .game-area::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 8px;
+    background: repeating-linear-gradient(90deg, #86efac 0 16px, #4ade80 16px 32px);
+  }
+  .game-area.damage { animation: dmgFlash 0.35s; }
+  @keyframes dmgFlash {
+    0%, 100% { box-shadow: inset 0 -30px 40px rgba(99,102,241,0.15); }
+    50% { box-shadow: inset 0 0 0 9999px rgba(239,68,68,0.28); }
+  }
+
+  .falling-item {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Consolas', monospace;
+    font-weight: 800;
+    user-select: none;
+    will-change: top;
+  }
+  .falling-letter {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    font-size: 1.8em;
+    border-width: 3px;
+    border-style: solid;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    text-transform: uppercase;
+  }
+  .falling-word {
+    padding: 8px 16px;
+    border-radius: 14px;
+    background: #fff;
+    border: 3px solid #c4b5fd;
+    color: #5b21b6;
+    font-size: 1.4em;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    letter-spacing: 2px;
+    text-transform: lowercase;
+    white-space: nowrap;
+  }
+  .falling-word.active {
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 3px #ddd6fe, 0 4px 12px rgba(124,58,237,0.4);
+  }
+  .falling-word .wl-done { color: #16a34a; }
+  .falling-word .wl-next { color: #7c3aed; text-decoration: underline; }
+  .falling-word.shake { animation: shake 0.3s; }
+
+  .game-pop { animation: gamePop 0.35s ease-out forwards; pointer-events: none; }
+  @keyframes gamePop {
+    0% { transform: scale(1); }
+    45% { transform: scale(1.5); opacity: 0.85; }
+    100% { transform: scale(0); opacity: 0; }
+  }
+  .game-fall-miss { animation: gameMiss 0.35s ease-out forwards; pointer-events: none; }
+  @keyframes gameMiss {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: translateY(12px) scale(0.6); opacity: 0; }
+  }
+
+  /* countdown overlay */
+  .game-countdown {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5.5em;
+    font-weight: 900;
+    color: #7c3aed;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 5;
+    pointer-events: none;
+  }
+  .game-countdown span { animation: cdPop 0.75s ease-out; }
+  @keyframes cdPop {
+    0% { transform: scale(2.2); opacity: 0; }
+    40% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0.7); opacity: 0; }
+  }
+
+  /* level-up toast */
+  .game-levelup {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #7c3aed;
+    color: #fff;
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-weight: 800;
+    z-index: 6;
+    white-space: nowrap;
+    animation: luToast 1.1s ease-out forwards;
+  }
+  @keyframes luToast {
+    0% { opacity: 0; transform: translate(-50%, -12px); }
+    20% { opacity: 1; transform: translate(-50%, 0); }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+  }
 </style>
 </head>
 <body>
@@ -857,6 +1064,7 @@
     <p class="subtitle">Chọn bài tập để bắt đầu luyện gõ!</p>
     <div class="star-balance">
       <div class="star-wallet">&#11088; <span id="star-count">0</span> sao</div>
+      <button class="game-btn" onclick="showGameSelect()">&#127918; Trò chơi</button>
       <button class="vocab-btn" onclick="showVocabSelect()">&#128214; Từ vựng</button>
       <button class="grammar-btn" onclick="showGrammarSelect()">&#128221; Ngữ pháp</button>
       <button class="article-btn" onclick="showArticleInput()">&#128196; Gõ bài văn</button>
@@ -930,6 +1138,49 @@
     <div class="result-buttons" style="margin-top:16px;">
       <button class="btn btn-primary" onclick="startArticle()">Gõ lại bài này</button>
       <button class="btn btn-success" onclick="showArticleInput()">Gõ bài khác</button>
+      <button class="btn btn-secondary" onclick="showSelect()">Về trang chủ</button>
+    </div>
+  </div>
+
+  <!-- GAME SELECT SCREEN -->
+  <div id="game-select-screen">
+    <button class="back-btn" onclick="showSelect()">&larr; Quay lại</button>
+    <h1>&#127783;&#65039; Mưa Chữ</h1>
+    <p class="subtitle">Gõ chữ trên bong bóng trước khi nó rơi chạm đất nhé!</p>
+    <div class="game-howto">
+      &#127919; <strong>Cách chơi:</strong> Chữ cái rơi từ trên xuống. Con hãy gõ đúng phím để làm nổ bong bóng &mdash; gõ đúng liên tục để được <strong>combo</strong> cao!
+      Mỗi lần để chữ chạm đất sẽ mất một &#10084;&#65039;. Hết tim là kết thúc. Chơi càng giỏi càng nhiều &#11088; sao!
+    </div>
+    <div class="game-level-grid" id="game-level-grid"></div>
+  </div>
+
+  <!-- GAME PLAY SCREEN -->
+  <div id="game-play-screen">
+    <button class="back-btn" onclick="quitGame()">&larr; Dừng chơi</button>
+    <div class="game-hud">
+      <div class="hud-box score">&#11088; Điểm: <span id="game-score">0</span></div>
+      <div class="hud-box level">&#128640; Cấp: <span id="game-level">1</span></div>
+      <div class="hud-box combo">&#128293; Combo: <span id="game-combo">0</span></div>
+      <div class="hud-box lives" id="game-lives">&#10084;&#65039;&#10084;&#65039;&#10084;&#65039;</div>
+      <button class="hud-mute" id="game-mute" onclick="toggleGameSound()">&#128266;</button>
+    </div>
+    <div class="game-area" id="game-area"></div>
+    <p style="text-align:center;color:#6b7280;font-size:0.95em;">Gõ chữ cái trên bong bóng &mdash; nhắm bong bóng thấp nhất (gần đất nhất) trước!</p>
+  </div>
+
+  <!-- GAME OVER SCREEN -->
+  <div id="game-over-screen">
+    <div class="result-box game-over-box">
+      <h2 id="game-over-title">&#127881; Kết thúc!</h2>
+      <div class="result-score" id="game-final-score">0</div>
+      <div class="result-stars" id="game-over-stars"></div>
+      <div class="result-message" id="game-over-message"></div>
+      <div class="stars-earned-note" id="game-stars-earned" style="display:none;"></div>
+      <p id="game-high-note" style="color:#a21caf;font-weight:700;margin-top:8px;"></p>
+    </div>
+    <div class="result-buttons">
+      <button class="btn btn-primary" id="game-btn-retry">Chơi lại</button>
+      <button class="btn btn-success" onclick="showGameSelect()">Trò chơi khác</button>
       <button class="btn btn-secondary" onclick="showSelect()">Về trang chủ</button>
     </div>
   </div>
@@ -1249,7 +1500,7 @@ function updateStarDisplays() {
 }
 
 // --- Screen switching ---
-const ALL_SCREENS = ['select-screen','practice-screen','result-screen','shop-screen','vocab-select-screen','vocab-practice-screen','vocab-result-screen','grammar-select-screen','grammar-practice-screen','grammar-result-screen','article-input-screen','article-practice-screen','article-result-screen'];
+const ALL_SCREENS = ['select-screen','practice-screen','result-screen','shop-screen','vocab-select-screen','vocab-practice-screen','vocab-result-screen','grammar-select-screen','grammar-practice-screen','grammar-result-screen','article-input-screen','article-practice-screen','article-result-screen','game-select-screen','game-play-screen','game-over-screen'];
 function hideAllScreens() {
   ALL_SCREENS.forEach(id => document.getElementById(id).style.display = 'none');
 }
@@ -2507,6 +2758,441 @@ function quitArticle() {
   const userInput = document.getElementById('article-user-input');
   userInput.removeEventListener('input', updateTypedCount);
   showArticleInput();
+}
+
+// ============================================
+// === GAME MODE: MƯA CHỮ (Falling Letters) ===
+// ============================================
+const GAME_LETTERS_EASY = ['a','s','d','f','g','h','j','k','l'];               // home row
+const GAME_LETTERS_MED = 'abcdefghijklmnopqrstuvwxyz'.split('');               // all letters
+const GAME_WORDS = ['cat','dog','sun','run','big','red','fun','top','hat','box','cup','map','pen','key','bus','egg','ice','sky','toy','fish','jump','book','tree','star','blue','ball','cake','milk','bird','frog','duck','lion','rain','play','kind','gold','moon','home','door','cool'];
+
+const GAME_LEVELS = [
+  { id: 'easy',   name: 'Dễ',  emoji: '&#128035;', mode: 'letter', pool: GAME_LETTERS_EASY, fallSpeed: 32, spawn: 1700, desc: 'Chữ cái hàng giữa (a s d f j k l...), rơi chậm' },
+  { id: 'medium', name: 'Vừa', emoji: '&#129419;', mode: 'letter', pool: GAME_LETTERS_MED,  fallSpeed: 52, spawn: 1300, desc: 'Tất cả 26 chữ cái, rơi vừa phải' },
+  { id: 'hard',   name: 'Khó', emoji: '&#128640;', mode: 'word',   pool: GAME_WORDS,        fallSpeed: 40, spawn: 2400, desc: 'Từ tiếng Anh ngắn, gõ cả từ, rơi nhanh' },
+];
+
+// --- Game state ---
+let currentGameLevel = null;
+let fallingItems = [];          // { el, mode, char|text, typedLen, y, popped }
+let gameRunning = false;
+let gameRAF = null;
+let lastFrameTime = 0;
+let spawnAccumulator = 0;
+let currentFallSpeed = 0;
+let currentSpawn = 0;
+let gameScore = 0;
+let gameLives = 3;
+let gameCombo = 0;
+let gameMaxCombo = 0;
+let gameLevelNum = 1;
+let activeWordItem = null;
+let gameCountdownToken = 0;
+let gameSoundOn = (localStorage.getItem('typingGameSound') || 'on') !== 'off';
+
+function randInt(n) { return Math.floor(Math.random() * n); }
+
+// --- High scores (per difficulty) ---
+function getGameHighScores() { return JSON.parse(localStorage.getItem('typingGameHigh') || '{}'); }
+function setGameHighScore(diff, score) {
+  const h = getGameHighScores();
+  if (!h[diff] || score > h[diff]) { h[diff] = score; localStorage.setItem('typingGameHigh', JSON.stringify(h)); }
+}
+
+// --- Sound (WebAudio blips) ---
+let gameAudioCtx = null;
+function initGameAudio() {
+  try { if (!gameAudioCtx) gameAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
+}
+function gameBeep(freq, dur, type) {
+  if (!gameSoundOn || !gameAudioCtx) return;
+  try {
+    const o = gameAudioCtx.createOscillator();
+    const g = gameAudioCtx.createGain();
+    o.type = type || 'sine';
+    o.frequency.value = freq;
+    o.connect(g); g.connect(gameAudioCtx.destination);
+    const t = gameAudioCtx.currentTime;
+    g.gain.setValueAtTime(0.14, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    o.start(t); o.stop(t + dur);
+  } catch (e) {}
+}
+function soundPop()   { gameBeep(660, 0.12, 'triangle'); }
+function soundType()  { gameBeep(880, 0.05, 'sine'); }
+function soundMiss()  { gameBeep(150, 0.25, 'sawtooth'); }
+function soundLevel() { gameBeep(520, 0.1, 'square'); setTimeout(() => gameBeep(780, 0.12, 'square'), 90); }
+function toggleGameSound() {
+  gameSoundOn = !gameSoundOn;
+  localStorage.setItem('typingGameSound', gameSoundOn ? 'on' : 'off');
+  document.getElementById('game-mute').innerHTML = gameSoundOn ? '&#128266;' : '&#128263;';
+  if (gameSoundOn) initGameAudio();
+}
+
+// --- Screens ---
+function showGameSelect() {
+  hideAllScreens();
+  document.removeEventListener('keydown', handleGameOverEnter);
+  document.getElementById('game-select-screen').style.display = 'block';
+  renderGameLevels();
+}
+function showGamePlay() {
+  hideAllScreens();
+  document.getElementById('game-play-screen').style.display = 'block';
+}
+function showGameOver() {
+  hideAllScreens();
+  document.getElementById('game-over-screen').style.display = 'block';
+}
+
+function renderGameLevels() {
+  const grid = document.getElementById('game-level-grid');
+  grid.innerHTML = '';
+  const highs = getGameHighScores();
+  GAME_LEVELS.forEach(lvl => {
+    const card = document.createElement('div');
+    card.className = 'game-level-card';
+    card.onclick = () => startGame(lvl);
+    const hi = highs[lvl.id] || 0;
+    card.innerHTML = `
+      <div class="gl-emoji">${lvl.emoji}</div>
+      <div class="gl-name">${lvl.name}</div>
+      <div class="gl-desc">${lvl.desc}</div>
+      <div class="gl-high">&#127942; Cao nhất: ${hi}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// --- Lifecycle ---
+function startGame(level) {
+  currentGameLevel = level;
+  gameScore = 0; gameLives = 3; gameCombo = 0; gameMaxCombo = 0; gameLevelNum = 1;
+  activeWordItem = null;
+  recomputeGameSpeed();
+  clearFallingItems();
+  document.getElementById('game-score').textContent = '0';
+  document.getElementById('game-level').textContent = '1';
+  document.getElementById('game-combo').textContent = '0';
+  document.getElementById('game-mute').innerHTML = gameSoundOn ? '&#128266;' : '&#128263;';
+  renderHearts();
+  showGamePlay();
+  initGameAudio();
+  runCountdown(beginPlay);
+}
+
+function runCountdown(cb) {
+  const area = document.getElementById('game-area');
+  const overlay = document.createElement('div');
+  overlay.className = 'game-countdown';
+  area.appendChild(overlay);
+  const steps = ['3', '2', '1', 'Bắt đầu!'];
+  let i = 0;
+  const myToken = ++gameCountdownToken; // invalidate any previous countdown
+  function tick() {
+    // aborted (quit / new game started) or navigated away
+    if (myToken !== gameCountdownToken || document.getElementById('game-play-screen').style.display === 'none') {
+      if (overlay.parentNode) overlay.remove();
+      return;
+    }
+    if (i >= steps.length) { overlay.remove(); cb(); return; }
+    overlay.innerHTML = '<span>' + steps[i] + '</span>';
+    i++;
+    setTimeout(tick, 750);
+  }
+  tick();
+}
+
+function beginPlay() {
+  if (gameRunning) return; // guard against double start
+  if (document.getElementById('game-play-screen').style.display === 'none') return;
+  gameRunning = true;
+  lastFrameTime = 0;
+  spawnAccumulator = currentSpawn; // spawn the first item right away
+  document.removeEventListener('keydown', handleGameKeyPress);
+  document.addEventListener('keydown', handleGameKeyPress);
+  gameRAF = requestAnimationFrame(gameLoop);
+}
+
+function teardownGameLoop() {
+  gameRunning = false;
+  if (gameRAF) { cancelAnimationFrame(gameRAF); gameRAF = null; }
+  document.removeEventListener('keydown', handleGameKeyPress);
+}
+
+function clearFallingItems() {
+  fallingItems.forEach(it => { if (it.el && it.el.parentNode) it.el.parentNode.removeChild(it.el); });
+  fallingItems = [];
+  activeWordItem = null;
+}
+
+function quitGame() {
+  gameCountdownToken++; // abort any in-flight countdown
+  teardownGameLoop();
+  clearFallingItems();
+  document.removeEventListener('keydown', handleGameOverEnter);
+  showGameSelect();
+}
+
+function recomputeGameSpeed() {
+  const b = currentGameLevel;
+  currentFallSpeed = Math.min(b.fallSpeed * Math.pow(1.10, gameLevelNum - 1), b.fallSpeed * 4);
+  currentSpawn = Math.max(650, b.spawn * Math.pow(0.92, gameLevelNum - 1));
+}
+
+// --- Spawning ---
+function renderWordHtml(word, typedLen) {
+  let h = '';
+  for (let i = 0; i < word.length; i++) {
+    const cls = i < typedLen ? 'wl-done' : (i === typedLen ? 'wl-next' : '');
+    h += `<span class="${cls}">${word[i]}</span>`;
+  }
+  return h;
+}
+
+function spawnFallingItem() {
+  if (fallingItems.length >= 12) return; // avoid clutter
+  const area = document.getElementById('game-area');
+  if (!area) return;
+  const lvl = currentGameLevel;
+  const el = document.createElement('div');
+  const item = { el, y: 0, popped: false, mode: lvl.mode };
+
+  if (lvl.mode === 'letter') {
+    const ch = lvl.pool[randInt(lvl.pool.length)];
+    item.char = ch;
+    const fi = FINGER_MAP[ch];
+    el.className = 'falling-item falling-letter ' + (fi ? fi.cls : '');
+    el.textContent = ch.toUpperCase();
+  } else {
+    const w = lvl.pool[randInt(lvl.pool.length)];
+    item.text = w;
+    item.typedLen = 0;
+    el.className = 'falling-item falling-word';
+    el.innerHTML = renderWordHtml(w, 0);
+  }
+
+  area.appendChild(el);
+  // position horizontally after measuring width
+  const areaW = area.clientWidth;
+  const w = el.offsetWidth;
+  const left = randInt(Math.max(1, areaW - w - 8)) + 4;
+  el.style.left = left + 'px';
+  el.style.top = '0px';
+  fallingItems.push(item);
+}
+
+// --- Main loop ---
+function gameLoop(now) {
+  if (!gameRunning) return;
+  if (!lastFrameTime) lastFrameTime = now;
+  let dt = now - lastFrameTime;
+  lastFrameTime = now;
+  if (dt > 60) dt = 60; // cap big gaps (tab switch)
+
+  const area = document.getElementById('game-area');
+  if (!area) { teardownGameLoop(); return; }
+
+  // spawn
+  spawnAccumulator += dt;
+  if (spawnAccumulator >= currentSpawn) { spawnAccumulator = 0; spawnFallingItem(); }
+
+  // move + ground collision
+  const areaH = area.clientHeight;
+  const snapshot = fallingItems.slice();
+  for (const it of snapshot) {
+    if (it.popped) continue;
+    it.y += currentFallSpeed * dt / 1000;
+    const h = it.el.offsetHeight || 56;
+    if (it.y >= areaH - h) {
+      it.el.style.top = (areaH - h) + 'px';
+      soundMiss();
+      popItem(it, false);
+      loseLife();
+      if (!gameRunning) break; // game over reached this frame
+      continue;
+    }
+    it.el.style.top = it.y + 'px';
+  }
+
+  // highlight the lowest word (the one to type) in word mode
+  if (gameRunning && currentGameLevel.mode === 'word') {
+    let lowest = null;
+    for (const it of fallingItems) { if (it.popped) continue; if (!lowest || it.y > lowest.y) lowest = it; }
+    if (lowest !== activeWordItem) {
+      if (activeWordItem && activeWordItem.el) activeWordItem.el.classList.remove('active');
+      if (lowest && lowest.el) lowest.el.classList.add('active');
+      activeWordItem = lowest;
+    }
+  }
+
+  if (gameRunning) gameRAF = requestAnimationFrame(gameLoop);
+}
+
+function popItem(item, success) {
+  item.popped = true;
+  fallingItems = fallingItems.filter(x => x !== item);
+  if (item === activeWordItem) activeWordItem = null;
+  if (item.el) {
+    item.el.classList.remove('active');
+    item.el.classList.add(success ? 'game-pop' : 'game-fall-miss');
+    const el = item.el;
+    setTimeout(() => { if (el && el.parentNode) el.parentNode.removeChild(el); }, 360);
+  }
+}
+
+function loseLife() {
+  if (!gameRunning) return;
+  gameLives--;
+  renderHearts();
+  flashDamage();
+  if (gameLives <= 0) gameOver();
+}
+
+function renderHearts() {
+  let h = '';
+  for (let i = 0; i < 3; i++) h += (i < gameLives) ? '&#10084;&#65039;' : '&#129293;';
+  document.getElementById('game-lives').innerHTML = h;
+}
+
+function flashDamage() {
+  const a = document.getElementById('game-area');
+  if (!a) return;
+  a.classList.add('damage');
+  setTimeout(() => a.classList.remove('damage'), 350);
+}
+
+function addGameScore(points) {
+  gameScore += points;
+  gameCombo++;
+  if (gameCombo > gameMaxCombo) gameMaxCombo = gameCombo;
+  document.getElementById('game-score').textContent = gameScore;
+  document.getElementById('game-combo').textContent = gameCombo;
+  const nl = Math.floor(gameScore / 10) + 1;
+  if (nl > gameLevelNum) {
+    gameLevelNum = nl;
+    recomputeGameSpeed();
+    document.getElementById('game-level').textContent = nl;
+    showLevelUpToast();
+    soundLevel();
+  }
+}
+
+function breakCombo() {
+  gameCombo = 0;
+  document.getElementById('game-combo').textContent = '0';
+}
+
+function showLevelUpToast() {
+  const area = document.getElementById('game-area');
+  if (!area) return;
+  const t = document.createElement('div');
+  t.className = 'game-levelup';
+  t.textContent = 'Cấp ' + gameLevelNum + '! Nhanh hơn nào!';
+  area.appendChild(t);
+  setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 1100);
+}
+
+// --- Key handling ---
+function handleGameKeyPress(e) {
+  if (!gameRunning) return;
+  if (e.ctrlKey || e.altKey || e.metaKey) return;
+  const key = e.key.toLowerCase();
+  if (key.length !== 1 || !/[a-z]/.test(key)) return;
+  e.preventDefault();
+
+  if (currentGameLevel.mode === 'letter') {
+    // pop the lowest (most urgent) falling letter matching this key
+    let target = null;
+    for (const it of fallingItems) {
+      if (it.popped) continue;
+      if (it.char === key && (!target || it.y > target.y)) target = it;
+    }
+    if (target) { popItem(target, true); addGameScore(1); soundPop(); }
+    else { breakCombo(); soundMiss(); }
+  } else {
+    // word mode: type the lowest word letter by letter
+    let target = null;
+    for (const it of fallingItems) {
+      if (it.popped) continue;
+      if (!target || it.y > target.y) target = it;
+    }
+    if (!target) return;
+    const expected = target.text[target.typedLen];
+    if (expected === key) {
+      target.typedLen++;
+      if (target.typedLen >= target.text.length) {
+        popItem(target, true); addGameScore(target.text.length); soundPop();
+      } else {
+        target.el.innerHTML = renderWordHtml(target.text, target.typedLen);
+        soundType();
+      }
+    } else {
+      target.el.classList.add('shake');
+      setTimeout(() => { if (target.el) target.el.classList.remove('shake'); }, 300);
+      breakCombo(); soundMiss();
+    }
+  }
+}
+
+// --- Game over ---
+function gameOver() {
+  teardownGameLoop();
+  clearFallingItems();
+
+  const prev = getGameHighScores()[currentGameLevel.id] || 0;
+  const isNewHigh = gameScore > prev;
+  setGameHighScore(currentGameLevel.id, gameScore);
+
+  const stars = Math.floor(gameScore / 10);
+
+  document.getElementById('game-over-title').innerHTML = gameScore > 0 ? '&#127881; Kết thúc!' : '&#128557; Hết mạng rồi!';
+  const finalEl = document.getElementById('game-final-score');
+  finalEl.textContent = gameScore + ' điểm';
+  finalEl.className = 'result-score ' + (stars >= 4 ? 'score-great' : stars >= 2 ? 'score-good' : stars >= 1 ? 'score-ok' : 'score-bad');
+
+  const starsEl = document.getElementById('game-over-stars');
+  starsEl.innerHTML = stars > 0
+    ? `<span style="font-size:1.5em;">&#11088; x ${stars}</span>`
+    : '<span style="font-size:1.1em;color:#9ca3af;">Chưa có sao - chơi tiếp nhé!</span>';
+
+  const msgEl = document.getElementById('game-over-message');
+  if (gameScore >= 40) msgEl.textContent = 'Siêu đỉnh! Con gõ nhanh như chớp! Combo cao nhất: ' + gameMaxCombo;
+  else if (gameScore >= 20) msgEl.textContent = 'Giỏi lắm! Combo cao nhất: ' + gameMaxCombo;
+  else if (gameScore >= 10) msgEl.textContent = 'Tốt lắm! Cố thêm chút nữa nhé!';
+  else msgEl.textContent = 'Cố lên! Tập gõ nhẹ nhàng và chính xác nhé!';
+
+  const earned = document.getElementById('game-stars-earned');
+  if (stars > 0) {
+    setTotalStars(getTotalStars() + stars);
+    earned.innerHTML = `&#11088; +${stars} sao! (Tổng: ${getTotalStars()} sao)`;
+    earned.style.display = 'inline-block';
+  } else {
+    earned.style.display = 'none';
+  }
+
+  const hn = document.getElementById('game-high-note');
+  hn.innerHTML = (isNewHigh && gameScore > 0)
+    ? '&#127942; Kỷ lục mới! Điểm cao nhất: ' + gameScore
+    : 'Điểm cao nhất của con: ' + Math.max(prev, gameScore);
+
+  if (gameScore === 0) soundMiss(); else soundLevel();
+
+  document.getElementById('game-btn-retry').onclick = () => startGame(currentGameLevel);
+  document.removeEventListener('keydown', handleGameOverEnter);
+  document.addEventListener('keydown', handleGameOverEnter);
+  showGameOver();
+}
+
+function handleGameOverEnter(e) {
+  if (e.key !== 'Enter') return;
+  if (document.getElementById('game-over-screen').style.display === 'none') {
+    document.removeEventListener('keydown', handleGameOverEnter);
+    return;
+  }
+  document.removeEventListener('keydown', handleGameOverEnter);
+  startGame(currentGameLevel);
 }
 
 // --- Init ---

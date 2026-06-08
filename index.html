@@ -1100,7 +1100,7 @@
   }
   .race-lane {
     position: relative;
-    height: 62px;
+    height: 78px;
     margin: 6px 0;
     border-bottom: 3px dashed #86efac;
   }
@@ -1122,6 +1122,26 @@
     font-size: 1.7em; opacity: 0.85;
   }
   .race-word-zone { text-align: center; }
+
+  /* word riding on the track, right behind the runner */
+  .race-word-track {
+    position: absolute;
+    bottom: 12px;
+    right: 100%;
+    white-space: nowrap;
+    font-family: 'Consolas', monospace;
+    font-weight: 800;
+    font-size: 2.1em;
+    letter-spacing: 3px;
+    text-transform: lowercase;
+    transition: right 0.35s ease-out;
+    z-index: 0;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.7);
+  }
+  .race-word-track .rw-pending { color: #1e293b; }
+  .race-word-track .rw-done { color: #15803d; opacity: 0.55; }
+  .race-word-track .rw-cur { color: #7c3aed; border-bottom: 4px solid #7c3aed; }
+  .race-word-track .rw-wrong { color: #dc2626; animation: shake 0.25s; }
 
   /* === WHACK-A-MOLE (Đập chuột chũi) === */
   .whack-grid {
@@ -1353,6 +1373,7 @@
     <div class="race-track" id="race-track">
       <div class="race-lane">
         <span class="race-label">Con &#128049;</span>
+        <div class="race-word-track" id="race-word-track"></div>
         <div class="race-runner" id="race-runner-player">&#128049;</div>
         <div class="race-finish">&#127937;</div>
       </div>
@@ -1363,8 +1384,7 @@
       </div>
     </div>
     <div class="race-word-zone">
-      <div style="font-size:0.95em;font-weight:600;color:#15803d;margin-bottom:8px;">Gõ từ này thật nhanh:</div>
-      <div class="letter-boxes" id="race-letter-boxes"></div>
+      <div style="font-size:0.95em;font-weight:600;color:#15803d;margin-bottom:6px;">Gõ chữ sau lưng mèo &#128049; để chạy về đích!</div>
       <div class="finger-hint" id="race-finger-hint"></div>
     </div>
   </div>
@@ -3597,6 +3617,8 @@ const RACE_OPPONENTS = [
   { id: 'cheetah', name: 'Báo máy',  emoji: '&#128006;', finishMs: 21000, stars: 4, desc: 'Siêu nhanh — thử thách!' },
 ];
 const RACE_TOTAL = 12;
+const RACE_START_PCT = 22;  // both racers begin here (leaves room for the word behind the cat)
+const RACE_END_PCT = 88;    // finish line position
 
 let raceOpponent = null;
 let raceWord = '';
@@ -3660,15 +3682,14 @@ function startRace(opp) {
 function loadRaceWord() {
   raceWord = RACE_WORDS[randInt(RACE_WORDS.length)];
   raceLetterIdx = 0;
-  const c = document.getElementById('race-letter-boxes');
-  c.innerHTML = '';
+  const wt = document.getElementById('race-word-track');
+  let html = '';
   for (let i = 0; i < raceWord.length; i++) {
-    const b = document.createElement('div');
-    b.className = 'letter-box' + (i === 0 ? ' current' : '');
-    b.id = 'rlb-' + i;
-    c.appendChild(b);
+    html += `<span class="rw-${i === 0 ? 'cur' : 'pending'}" id="rw-${i}">${raceWord[i]}</span>`;
   }
+  wt.innerHTML = html;
   updateRaceFingerHint(raceWord[0]);
+  updateRacePositions();
 }
 
 function updateRaceFingerHint(ch) {
@@ -3679,11 +3700,16 @@ function updateRaceFingerHint(ch) {
 }
 
 function updateRacePositions() {
-  const toLeft = p => Math.min(88, Math.max(0, p) * 88) + '%';
+  const toPct = p => RACE_START_PCT + Math.min(1, Math.max(0, p)) * (RACE_END_PCT - RACE_START_PCT);
+  const playerPct = toPct(racePlayerPos);
+  const cpuPct = toPct(raceCpuPos);
   const pl = document.getElementById('race-runner-player');
   const cp = document.getElementById('race-runner-cpu');
-  if (pl) pl.style.left = toLeft(racePlayerPos);
-  if (cp) cp.style.left = toLeft(raceCpuPos);
+  if (pl) pl.style.left = playerPct + '%';
+  if (cp) cp.style.left = cpuPct + '%';
+  // anchor the word so its right edge sits just behind the cat's left edge
+  const wt = document.getElementById('race-word-track');
+  if (wt) wt.style.right = `calc(${100 - playerPct}% + 8px)`;
 }
 
 function hopRunner(id) {
@@ -3714,10 +3740,9 @@ function handleRaceKey(e) {
   if (pressed.length !== 1 || !/[a-z]/i.test(pressed)) return;
   e.preventDefault();
   const expected = raceWord[raceLetterIdx];
-  const box = document.getElementById('rlb-' + raceLetterIdx);
+  const span = document.getElementById('rw-' + raceLetterIdx);
   if (pressed.toLowerCase() === expected.toLowerCase()) {
-    box.className = 'letter-box correct';
-    box.textContent = expected.toLowerCase();
+    if (span) span.className = 'rw-done';
     raceLetterIdx++;
     soundType();
     if (raceLetterIdx >= raceWord.length) {
@@ -3730,14 +3755,13 @@ function handleRaceKey(e) {
       if (raceWordsDone >= RACE_TOTAL) { finishRace(true); return; }
       loadRaceWord();
     } else {
-      const nb = document.getElementById('rlb-' + raceLetterIdx);
-      if (nb) nb.classList.add('current');
+      const ns = document.getElementById('rw-' + raceLetterIdx);
+      if (ns) ns.className = 'rw-cur';
       updateRaceFingerHint(raceWord[raceLetterIdx]);
     }
   } else {
-    box.classList.add('wrong');
+    if (span) { span.classList.add('rw-wrong'); setTimeout(() => { if (span) span.classList.remove('rw-wrong'); }, 300); }
     raceMistakes++;
-    setTimeout(() => { if (box) box.classList.remove('wrong'); }, 300);
     soundMiss();
   }
 }
